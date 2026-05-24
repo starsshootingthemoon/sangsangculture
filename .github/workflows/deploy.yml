@@ -12,13 +12,15 @@ jobs:
       - name: 코드 체크아웃
         uses: actions/checkout@v4
 
-      - name: 카페24 서버에 배포 (SFTP)
-        uses: appleboy/scp-action@v0.1.7
+      - name: 카페24 서버에 배포 (FTP)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
-          host: sang0153.cafe24.com
+          server: sang0153.cafe24.com
           username: sang0153
           password: ${{ secrets.CAFE24_PASSWORD }}
-          port: 22
-          source: "*.html,assets/"
-          target: /home/sang0153/www
-          overwrite: true
+          server-dir: /www/
+          exclude: |
+            **/.git*
+            **/.git*/**
+            **/.claude/**
+            **/node_modules/**
