@@ -259,6 +259,46 @@
       background: rgba(255,255,255,0.1);
     }
 
+    /* ── Brand Tile 반응형 (인라인 적용) ── */
+    @media (max-width: 1024px) {
+      .brand-grid { grid-template-rows: 280px 280px !important; }
+      .brand-tile--1, .brand-tile--2,
+      .brand-tile--3, .brand-tile--4 {
+        padding: 24px 20px !important;
+        gap: 16px !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        overflow: hidden;
+      }
+      .brand-tile__label { font-size: 40px !important; white-space: nowrap !important; }
+      /* 로고 원본 비율: culture=198×139, madang=210×134, magazine=210×135, seo=210×145 */
+      .brand-tile--1 .brand-tile__logo { width: 157px !important; height: 110px !important; object-fit: contain !important; }
+      .brand-tile--2 .brand-tile__logo { width: 173px !important; height: 110px !important; object-fit: contain !important; }
+      .brand-tile--3 .brand-tile__logo { width: 171px !important; height: 110px !important; object-fit: contain !important; }
+      .brand-tile--4 .brand-tile__logo { width: 160px !important; height: 110px !important; object-fit: contain !important; }
+    }
+    @media (max-width: 768px) {
+      .brand-grid {
+        grid-template-columns: 1fr !important;
+        grid-template-rows: repeat(4, 200px) !important;
+      }
+      .brand-tile--1, .brand-tile--2,
+      .brand-tile--3, .brand-tile--4 {
+        padding: 16px 20px !important;
+        gap: 12px !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+      }
+      .brand-tile__label { font-size: 28px !important; white-space: nowrap !important; }
+      /* 로고 원본 비율대로 90px 기준 축소 */
+      .brand-tile--1 .brand-tile__logo { width: 128px !important; height: 90px !important; object-fit: contain !important; }
+      .brand-tile--2 .brand-tile__logo { width: 141px !important; height: 90px !important; object-fit: contain !important; }
+      .brand-tile--3 .brand-tile__logo { width: 140px !important; height: 90px !important; object-fit: contain !important; }
+      .brand-tile--4 .brand-tile__logo { width: 130px !important; height: 90px !important; object-fit: contain !important; }
+    }
+
     /* ───────────── Footer ───────────── */
     .footer {
       width: 100%;

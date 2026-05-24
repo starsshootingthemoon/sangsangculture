@@ -126,15 +126,26 @@
   .footer__info { font-size: 11px; line-height: 2; }
   .footer__copy { font-size: 13px; }
 
-  /* ── index.html: Brand Grid ── */
-  .brand-grid { grid-template-rows: 260px 260px !important; }
+  /* ── index.html: Brand Grid (태블릿: 2열 유지, 패딩/로고 재정의) ── */
+  .brand-grid { grid-template-rows: 280px 280px !important; }
   .brand-tile--1, .brand-tile--2,
-  .brand-tile--3, .brand-tile--4 { padding: 28px 20px !important; gap: 20px !important; }
-  .brand-tile__label { font-size: 44px !important; }
+  .brand-tile--3, .brand-tile--4 {
+    padding: 24px 20px !important;
+    gap: 16px !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+  .brand-tile__label { font-size: 40px !important; white-space: nowrap !important; }
   .brand-tile--1 .brand-tile__logo,
   .brand-tile--2 .brand-tile__logo,
   .brand-tile--3 .brand-tile__logo,
-  .brand-tile--4 .brand-tile__logo { width: 130px !important; height: auto !important; }
+  .brand-tile--4 .brand-tile__logo {
+    width: auto !important;
+    height: auto !important;
+    max-height: 120px !important;
+    max-width: 80% !important;
+  }
 
   /* ── about.html ── */
   .hero { height: 380px; }
@@ -236,26 +247,28 @@
   .navbar__logo-text { display: none; }
   .navbar__hamburger { right: 16px !important; }
 
-  /* index: brand grid → 1열 */
+  /* index: brand grid → 1열 (세로 스택, 로고+라벨 column 유지) */
   .brand-grid {
     grid-template-columns: 1fr !important;
-    grid-template-rows: repeat(4, 160px) !important;
+    grid-template-rows: repeat(4, 200px) !important;
   }
   .brand-tile--1, .brand-tile--2,
   .brand-tile--3, .brand-tile--4 {
-    padding: 20px 24px !important;
-    flex-direction: row !important;
+    padding: 16px 20px !important;
+    flex-direction: column !important;
     justify-content: center !important;
     align-items: center !important;
-    gap: 20px !important;
+    gap: 12px !important;
   }
-  .brand-tile__label { font-size: 30px !important; white-space: nowrap !important; }
+  .brand-tile__label { font-size: 28px !important; white-space: nowrap !important; }
   .brand-tile--1 .brand-tile__logo,
   .brand-tile--2 .brand-tile__logo,
   .brand-tile--3 .brand-tile__logo,
   .brand-tile--4 .brand-tile__logo {
     width: auto !important;
-    height: 70px !important;
+    height: auto !important;
+    max-height: 100px !important;
+    max-width: 75% !important;
   }
 
   /* about */

@@ -52,7 +52,12 @@
       "Bash(git init *)",
       "Bash(git branch *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(sed -i '' 's/preserveAspectRatio=\"none\" width=\"100%\" height=\"100%\"/preserveAspectRatio=\"xMidYMid meet\" width=\"198.067\" height=\"139.3\"/' /Users/cherrypie/Documents/sangsang/assets/sangsang-culture-logo.svg)",
+      "Bash(sed -i '' 's/preserveAspectRatio=\"none\" width=\"100%\" height=\"100%\"/preserveAspectRatio=\"xMidYMid meet\" width=\"209.951\" height=\"133.7\"/' /Users/cherrypie/Documents/sangsang/assets/sangsang-madang-logo.svg)",
+      "Bash(sed -i '' 's/preserveAspectRatio=\"none\" width=\"100%\" height=\"100%\"/preserveAspectRatio=\"xMidYMid meet\" width=\"209.511\" height=\"135.1\"/' /Users/cherrypie/Documents/sangsang/assets/sangsang-magazine-logo.svg)",
+      "Bash(sed -i '' 's/preserveAspectRatio=\"none\" width=\"100%\" height=\"100%\"/preserveAspectRatio=\"xMidYMid meet\" width=\"299.988\" height=\"207\"/' /Users/cherrypie/Documents/sangsang/assets/sangsang-books-logo.svg)",
+      "Bash(echo \"Server PID: $!\")"
     ]
   }
 }
