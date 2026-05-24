@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <script>window.location.replace("sangsang-story.html");</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>상상ZINE — SangSang Culture</title>
@@ -17,14 +16,10 @@
       --font-main:       'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       --font-display:    'Y_Spotlight', 'Noto Serif KR', Georgia, serif;
     }
-    html { background: #fff; } body { width: 100%; max-width: 1440px; margin: 0 auto; font-family: var(--font-main); background: #fff; }
+    html { background: #fff; } body { width: 100%; max-width: 1440px; margin: 0 auto; min-height: 100vh; font-family: var(--font-main); background: #fff; display: flex; flex-direction: column; }
 
     /* ── Navbar ── */
-    .navbar {
-      position: sticky; top: 0; z-index: 100; width: 100%; height: 145px;
-      background: #fff; display: grid; grid-template-columns: 1fr auto 1fr;
-      align-items: center; padding: 0 40px; box-shadow: 0 1px 0 rgba(0,0,0,0.06);
-    }
+    .navbar { position: sticky; top: 0; z-index: 100; width: 100%; height: 145px; background: #fff; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 40px; box-shadow: 0 1px 0 rgba(0,0,0,0.06); }
     .navbar__logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
     .navbar__logo-img { width: 95px; height: 67px; object-fit: contain; }
     .navbar__logo-text { font-family: var(--font-display); font-size: 22px; color: var(--color-green); line-height: 1.3; white-space: nowrap; }
@@ -40,154 +35,15 @@
     .navbar__auth a { color: var(--color-nav-text); text-decoration: none; transition: color 0.2s; }
     .navbar__auth a:hover { color: var(--color-green); }
 
-    /* ── Hero ── */
-    .hero {
-      position: relative; width: 100%; height: 461px; overflow: hidden;
-    }
-    .hero__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center top; }
-    .hero__overlay { position: absolute; inset: 0; background: rgba(255,255,255,0.8); }
-    .hero__content {
-      position: relative; z-index: 2; height: 100%;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 80px;
-    }
-    .hero__left { display: flex; flex-direction: column; gap: 28px; }
-    .hero__logo { width: 299px; object-fit: contain; }
-    .hero__newsletter-btn {
-      display: inline-flex; align-items: center; justify-content: center;
-      background: var(--color-green); color: #fff; text-decoration: none;
-      font-family: var(--font-main); font-weight: 700; font-size: 18px;
-      padding: 14px 28px; border-radius: 12px;
-      transition: background 0.2s, transform 0.1s; width: fit-content;
-    }
-    .hero__newsletter-btn:hover { background: #83a34c; }
-    .hero__newsletter-btn:active { transform: scale(0.97); }
-    .hero__right { text-align: right; }
-    .hero__zine-text {
-      font-family: var(--font-display); font-size: 61px; color: var(--color-green);
-      line-height: 1.2;
-    }
-
-    /* ── 최신 출간 Split Layout ── */
-    .split-wrapper {
-      display: flex;
-      height: calc(100vh - 145px);
-      overflow: hidden;
-      border-top: 1px solid #eee;
-    }
-
-    /* Left: scrollable issue list */
-    .split-left {
-      width: 50%;
-      overflow-y: auto;
-      padding: 48px 40px 48px 80px;
-      border-right: 1px solid #eee;
-    }
-    .split-left::-webkit-scrollbar { width: 4px; }
-    .split-left::-webkit-scrollbar-thumb { background: #d0d0d0; border-radius: 2px; }
-
-    .split-title {
-      font-family: var(--font-main); font-weight: 600; font-size: 24px;
-      color: #000; margin-bottom: 32px;
-    }
-
-    .issue-list { display: flex; flex-direction: column; gap: 16px; }
-
-    .issue-pill {
-      display: flex; align-items: center; gap: 16px;
-      background: var(--color-green); border-radius: 15px;
-      padding: 0 22px; height: 100px; cursor: pointer;
-      text-decoration: none; transition: background 0.2s, transform 0.15s;
-    }
-    .issue-pill:hover { background: #83a34c; transform: translateX(4px); }
-    .issue-pill__icon { width: 36px; height: 36px; object-fit: contain; flex-shrink: 0; filter: brightness(0) invert(1); }
-    .issue-pill__text {
-      font-family: var(--font-main); font-weight: 600; font-size: 22px; color: #fff;
-      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    }
-
-    /* Right: scrollable cover grid */
-    .split-right {
-      width: 50%;
-      overflow-y: auto;
-      padding: 48px 40px;
-      background: #fafafa;
-    }
-    .split-right::-webkit-scrollbar { width: 4px; }
-    .split-right::-webkit-scrollbar-thumb { background: #d0d0d0; border-radius: 2px; }
-
-    .cover-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-    .cover-card {
-      border-radius: 14px; overflow: hidden; background: #e0e0e0;
-      aspect-ratio: 277/369; cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    .cover-card:nth-child(even) { margin-top: 40px; }
-    .cover-card:hover { transform: translateY(-4px); box-shadow: 0 12px 28px rgba(0,0,0,0.12); }
-    .cover-card__img { width: 100%; height: 100%; object-fit: cover; display: block; }
-
-    /* ── 모든 매거진 보기 ── */
-    .all-section { padding: 72px 80px 80px; }
-    .all-header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 40px; padding-bottom: 16px; border-bottom: 2px solid #eee;
-    }
-    .all-header__title { font-family: var(--font-main); font-weight: 600; font-size: 24px; color: #000; }
-    .sort-btns { display: flex; align-items: center; }
-    .sort-btn {
-      background: none; border: none; cursor: pointer; padding: 4px 8px;
-      font-family: var(--font-main); font-size: 18px; font-weight: 400;
-      color: #343434; transition: color 0.2s;
-    }
-    .sort-btn.active { color: var(--color-green); font-weight: 600; }
-    .sort-divider { color: #d9d9d9; font-size: 20px; padding: 0 4px; user-select: none; }
-
-    /* Magazine grid */
-    .mag-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px 24px; }
-
-    .mag-card { cursor: pointer; }
-    .mag-card__img-wrap {
-      position: relative; width: 100%; aspect-ratio: 277/369;
-      border-radius: 14px; overflow: hidden; background: #e0e0e0; margin-bottom: 14px;
-      transition: box-shadow 0.2s;
-    }
-    .mag-card:hover .mag-card__img-wrap { box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
-    .mag-card__img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.35s; }
-    .mag-card:hover .mag-card__img { transform: scale(1.04); }
-
-    /* Hover overlay */
-    .mag-card__overlay {
-      position: absolute; inset: 0;
-      background: rgba(52, 52, 52, 0.82);
-      opacity: 0; transition: opacity 0.3s;
-      display: flex; flex-direction: column;
-      justify-content: flex-end; padding: 24px 20px; gap: 8px;
-    }
-    .mag-card:hover .mag-card__overlay { opacity: 1; }
-    .mag-card__overlay-issue { font-family: var(--font-main); font-weight: 500; font-size: 12px; color: rgba(255,255,255,0.65); text-transform: uppercase; letter-spacing: 0.06em; }
-    .mag-card__overlay-title { font-family: var(--font-main); font-weight: 700; font-size: 15px; color: #fff; line-height: 1.4; }
-    .mag-card__overlay-editor { font-family: var(--font-main); font-weight: 400; font-size: 13px; color: rgba(255,255,255,0.75); }
-
-    .mag-card__issue { font-family: var(--font-main); font-weight: 600; font-size: 18px; color: #000; margin-bottom: 4px; }
-    .mag-card__date { font-family: var(--font-main); font-weight: 500; font-size: 16px; color: #555; }
-
-    /* Pagination */
-    .pagination {
-      display: flex; align-items: center; justify-content: center;
-      gap: 8px; margin-top: 60px;
-    }
-    .page-btn {
-      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
-      border: none; background: none; cursor: pointer;
-      font-family: var(--font-main); font-size: 20px; color: #000; border-radius: 4px; transition: color 0.2s;
-    }
-    .page-btn.active { color: var(--color-green); font-weight: 700; }
-    .page-btn:hover:not(.active) { color: var(--color-green); }
-    .page-btn.arrow { color: #555; }
+    /* ── Coming Soon ── */
+    .coming-soon { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 80px 40px; text-align: center; }
+    .coming-soon__icon { font-size: 72px; line-height: 1; }
+    .coming-soon__title { font-family: var(--font-display); font-size: 52px; color: var(--color-green); line-height: 1.2; }
+    .coming-soon__badge { display: inline-flex; align-items: center; justify-content: center; padding: 8px 24px; background: #f5f5f5; border-radius: 999px; font-family: var(--font-main); font-weight: 700; font-size: 16px; color: var(--color-nav-text); letter-spacing: 0.08em; }
+    .coming-soon__desc { font-family: var(--font-main); font-weight: 400; font-size: 20px; color: #555; line-height: 1.8; max-width: 480px; }
+    .coming-soon__back { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; padding: 14px 32px; background: var(--color-green); border-radius: 14px; font-family: var(--font-main); font-weight: 700; font-size: 17px; color: #fff; text-decoration: none; transition: background 0.2s, transform 0.1s; }
+    .coming-soon__back:hover { background: #83a34c; }
+    .coming-soon__back:active { transform: scale(0.97); }
 
     /* ── Footer ── */
     .footer { width: 100%; height: 237px; background: var(--color-footer-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 36px 0 0; }
@@ -213,7 +69,7 @@
         <li><a href="https://www.youtube.com/@%EC%83%81%EC%83%81%EB%8F%99%ED%96%89%EB%A7%88%EB%8B%B9" target="_blank">상상동행마당</a></li>
         <li><a href="sangsang-zine.html" class="active">상상ZINE</a></li>
         <li><a href="https://smartstore.naver.com/sangsangbook" target="_blank">상상서가</a></li>
-        <li><a href="#">상상STORY</a></li>
+        <li><a href="sangsang-story.html">상상STORY</a></li>
       </ul>
     </nav>
     <div class="navbar__auth">
@@ -221,90 +77,23 @@
       <span>|</span>
       <a href="signup.html">회원가입</a>
     </div>
-          <button class="navbar__hamburger" onclick="toggleMenu()" aria-label="메뉴 열기">
-        <span></span><span></span><span></span>
-      </button>
+    <button class="navbar__hamburger" onclick="toggleMenu()" aria-label="메뉴 열기">
+      <span></span><span></span><span></span>
+    </button>
   </header>
 
-  <!-- ══ Hero ══ -->
-  <section class="hero">
-    <img class="hero__bg" src="assets/zine-hero-bg.png" alt="상상ZINE 배경" />
-    <div class="hero__overlay"></div>
-    <div class="hero__content">
-      <div class="hero__left">
-        <img class="hero__logo" src="assets/sangsang-zine-logo.svg" alt="상상ZINE 로고" />
-        <a href="zine-newsletter.html" class="hero__newsletter-btn">뉴스레터 신청하기 →</a>
-      </div>
-      <div class="hero__right">
-        <p class="hero__zine-text">SangSang<br>Zine</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══ 최신 출간 Split ══ -->
-  <div class="split-wrapper">
-    <!-- Left: issue list -->
-    <div class="split-left">
-      <h2 class="split-title">최신 출간</h2>
-      <div class="issue-list">
-        <a href="zine-magazine.html" class="issue-pill">
-          <img class="issue-pill__icon" src="assets/zine-list-icon-1.svg" alt="" />
-          <span class="issue-pill__text">1월 호: 새해의 첫 장, 문화가 시작되는 순간</span>
-        </a>
-        <a href="zine-magazine.html" class="issue-pill">
-          <img class="issue-pill__icon" src="assets/zine-list-icon-2.svg" alt="" />
-          <span class="issue-pill__text">2월 호: 겨울 끝에서 만난 예술의 온도</span>
-        </a>
-        <a href="zine-magazine.html" class="issue-pill">
-          <img class="issue-pill__icon" src="assets/zine-list-icon-1.svg" alt="" />
-          <span class="issue-pill__text">3월 호: 거리 위의 무대, 봄을 부르는 소리</span>
-        </a>
-        <a href="zine-magazine.html" class="issue-pill">
-          <img class="issue-pill__icon" src="assets/zine-list-icon-1.svg" alt="" />
-          <span class="issue-pill__text">4월 호: 창작의 계절, 예술이 피어나다</span>
-        </a>
-        <a href="zine-magazine.html" class="issue-pill">
-          <img class="issue-pill__icon" src="assets/zine-list-icon-2.svg" alt="" />
-          <span class="issue-pill__text">5월 호: 도시와 예술이 만나는 순간</span>
-        </a>
-      </div>
-    </div>
-
-    <!-- Right: cover grid -->
-    <div class="split-right">
-      <div class="cover-grid">
-        <a href="zine-magazine.html" class="cover-card">
-          <img class="cover-card__img" src="assets/zine-hero-bg.png" alt="1월 호 커버" />
-        </a>
-        <a href="zine-magazine.html" class="cover-card">
-          <img class="cover-card__img" src="assets/zine-newsletter-bg.png" alt="2월 호 커버" />
-        </a>
-        <a href="zine-magazine.html" class="cover-card">
-          <img class="cover-card__img" src="assets/zine-hero-bg.png" alt="3월 호 커버" />
-        </a>
-        <a href="zine-magazine.html" class="cover-card">
-          <img class="cover-card__img" src="assets/zine-newsletter-bg.png" alt="4월 호 커버" />
-        </a>
-        <a href="zine-magazine.html" class="cover-card">
-          <img class="cover-card__img" src="assets/zine-hero-bg.png" alt="5월 호 커버" />
-        </a>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ 모든 매거진 보기 ══ -->
-  <section class="all-section">
-    <div class="all-header">
-      <h2 class="all-header__title">모든 매거진 보기</h2>
-      <div class="sort-btns">
-        <button class="sort-btn active" id="btnNewest" onclick="sortBy('newest')">최신순</button>
-        <span class="sort-divider">|</span>
-        <button class="sort-btn" id="btnOldest" onclick="sortBy('oldest')">출판순</button>
-      </div>
-    </div>
-    <div class="mag-grid" id="magGrid"></div>
-    <div class="pagination" id="pagination"></div>
-  </section>
+  <!-- ══ Coming Soon ══ -->
+  <main class="coming-soon">
+    <div class="coming-soon__icon">📖</div>
+    <h1 class="coming-soon__title">상상ZINE</h1>
+    <span class="coming-soon__badge">COMING SOON</span>
+    <p class="coming-soon__desc">
+      상상문화의 매거진과 뉴스레터가 곧 찾아옵니다.<br>
+      다양한 문화 콘텐츠를 담아 선보일게요.<br>
+      조금만 기다려 주세요!
+    </p>
+    <a href="index.html" class="coming-soon__back">← 홈으로 돌아가기</a>
+  </main>
 
   <!-- ══ Footer ══ -->
   <footer class="footer">
@@ -313,89 +102,21 @@
       <a href="#">제휴 문의</a>
     </div>
     <p class="footer__info">
-      <span class="bold">(주)상상이엔씨</span>
+      <span class="bold">(주)상상아이앤씨</span>
       <span class="regular"> | 대표 김대석 | </span>
       <span class="bold">사업자번호</span>
-      <span class="regular"> 000-000-000 | </span>
+      <span class="regular"> 750-81-01874 | </span>
       <span class="bold">주소</span>
-      <span class="regular"> 서울 성동구 아차산로 107 (성수동2가) 베컴빌딩 201호 | </span>
+      <span class="regular"> 인천시 서구 가남로 295 | </span>
       <span class="bold">문의</span>
-      <span class="regular"> 02-123-4567 | </span>
+      <span class="regular"> 02-6397-0153 | </span>
       <span class="bold">FAX</span>
-      <span class="regular"> 02-123-4567</span>
+      <span class="regular"> 02-6442-4278 | </span>
+      <span class="bold">E-mail</span>
+      <span class="regular"> sangsang1210@naver.com</span>
     </p>
     <p class="footer__copy">© 2026 Sangsang I&amp;C Co., Ltd. All rights reserved.</p>
   </footer>
-
-  <script>
-    const ITEMS_PER_PAGE = 8;
-    const magazines = [
-      { issue: '5월 호', title: '도시와 예술이 만나는 순간',       editor: '홍길동', date: '2026.05.05', img: 'assets/zine-hero-bg.png' },
-      { issue: '4월 호', title: '창작의 계절, 예술이 피어나다',    editor: '김문화', date: '2026.04.04', img: 'assets/zine-newsletter-bg.png' },
-      { issue: '3월 호', title: '거리 위의 무대, 봄을 부르는 소리', editor: '이상상', date: '2026.03.03', img: 'assets/zine-hero-bg.png' },
-      { issue: '2월 호', title: '겨울 끝에서 만난 예술의 온도',    editor: '박예술', date: '2026.02.02', img: 'assets/zine-newsletter-bg.png' },
-      { issue: '1월 호', title: '새해의 첫 장, 문화가 시작되는 순간', editor: '홍길동', date: '2026.01.01', img: 'assets/zine-hero-bg.png' },
-    ];
-
-    let currentSort = 'newest';
-    let currentPage = 1;
-
-    function sortBy(type) {
-      currentSort = type;
-      currentPage = 1;
-      document.getElementById('btnNewest').classList.toggle('active', type === 'newest');
-      document.getElementById('btnOldest').classList.toggle('active', type === 'oldest');
-      render();
-    }
-
-    function getSorted() {
-      return [...magazines].sort((a, b) => {
-        const da = new Date(a.date.replace(/\./g, '-'));
-        const db = new Date(b.date.replace(/\./g, '-'));
-        return currentSort === 'newest' ? db - da : da - db;
-      });
-    }
-
-    function render() {
-      const sorted = getSorted();
-      const totalPages = Math.ceil(sorted.length / ITEMS_PER_PAGE);
-      const start = (currentPage - 1) * ITEMS_PER_PAGE;
-      const page = sorted.slice(start, start + ITEMS_PER_PAGE);
-
-      document.getElementById('magGrid').innerHTML = page.map(m => `
-        <a href="zine-magazine.html" class="mag-card" style="text-decoration:none;color:inherit;">
-          <div class="mag-card__img-wrap">
-            <img class="mag-card__img" src="${m.img}" alt="${m.issue}" />
-            <div class="mag-card__overlay">
-              <span class="mag-card__overlay-issue">${m.issue}</span>
-              <span class="mag-card__overlay-title">${m.title}</span>
-              <span class="mag-card__overlay-editor">에디터 · ${m.editor}</span>
-            </div>
-          </div>
-          <p class="mag-card__issue">${m.issue}</p>
-          <p class="mag-card__date">${m.date}</p>
-        </a>
-      `).join('');
-
-      const pg = document.getElementById('pagination');
-      let html = `<button class="page-btn arrow" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled style="opacity:0.3;cursor:default"':''}>&lt;</button>`;
-      for (let i = 1; i <= totalPages; i++) {
-        html += `<button class="page-btn ${i===currentPage?'active':''}" onclick="goPage(${i})">${i}</button>`;
-      }
-      html += `<button class="page-btn arrow" onclick="goPage(${currentPage+1})" ${currentPage===totalPages?'disabled style="opacity:0.3;cursor:default"':''}>&gt;</button>`;
-      pg.innerHTML = html;
-    }
-
-    function goPage(p) {
-      const total = Math.ceil(getSorted().length / ITEMS_PER_PAGE);
-      if (p < 1 || p > total) return;
-      currentPage = p;
-      render();
-      document.querySelector('.all-section').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    render();
-  </script>
 
   <!-- ══ 모바일 오버레이 ══ -->
   <div class="mobile-nav-overlay" id="mobileOverlay" onclick="closeMenu()"></div>
@@ -410,11 +131,11 @@
       <button class="mobile-nav__close" onclick="closeMenu()">✕</button>
     </div>
     <ul class="mobile-nav__menu">
-        <li><a href="about.html">회사 소개</a></li>
-        <li><a href="https://www.youtube.com/@%EC%83%81%EC%83%81%EB%8F%99%ED%96%89%EB%A7%88%EB%8B%B9" target="_blank">상상동행마당</a></li>
-        <li><a href="sangsang-zine.html" class="active">상상ZINE</a></li>
-        <li><a href="https://smartstore.naver.com/sangsangbook" target="_blank">상상서가</a></li>
-        <li><a href="sangsang-story.html">상상STORY</a></li>
+      <li><a href="about.html">회사 소개</a></li>
+      <li><a href="https://www.youtube.com/@%EC%83%81%EC%83%81%EB%8F%99%ED%96%89%EB%A7%88%EB%8B%B9" target="_blank">상상동행마당</a></li>
+      <li><a href="sangsang-zine.html" class="active">상상ZINE</a></li>
+      <li><a href="https://smartstore.naver.com/sangsangbook" target="_blank">상상서가</a></li>
+      <li><a href="sangsang-story.html">상상STORY</a></li>
     </ul>
     <div class="mobile-nav__auth">
       <a href="login.html">로그인</a>

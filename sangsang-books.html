@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <script>window.location.replace("sangsang-story.html");</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>상상서가 — SangSang Culture</title>
@@ -17,14 +16,10 @@
       --font-main:       'Pretendard', 'Apple SD Gothic Neo', sans-serif;
       --font-display:    'Y_Spotlight', 'Noto Serif KR', Georgia, serif;
     }
-    html { background: #fff; } body { width: 100%; max-width: 1440px; margin: 0 auto; font-family: var(--font-main); background: #fff; }
+    html { background: #fff; } body { width: 100%; max-width: 1440px; margin: 0 auto; min-height: 100vh; font-family: var(--font-main); background: #fff; display: flex; flex-direction: column; }
 
     /* ── Navbar ── */
-    .navbar {
-      position: sticky; top: 0; z-index: 100; width: 100%; height: 145px;
-      background: #fff; display: grid; grid-template-columns: 1fr auto 1fr;
-      align-items: center; padding: 0 40px; box-shadow: 0 1px 0 rgba(0,0,0,0.06);
-    }
+    .navbar { position: sticky; top: 0; z-index: 100; width: 100%; height: 145px; background: #fff; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 40px; box-shadow: 0 1px 0 rgba(0,0,0,0.06); }
     .navbar__logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
     .navbar__logo-img { width: 95px; height: 67px; object-fit: contain; }
     .navbar__logo-text { font-family: var(--font-display); font-size: 22px; color: var(--color-green); line-height: 1.3; white-space: nowrap; }
@@ -32,230 +27,21 @@
     .navbar__menu li { position: relative; padding: 0 20px; }
     .navbar__menu a { font-family: var(--font-main); font-weight: 600; font-size: 16px; color: var(--color-nav-text); text-decoration: none; display: block; padding-bottom: 8px; transition: color 0.2s; }
     .navbar__menu a::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 4px; background: var(--color-green); border-radius: 2px; transition: width 0.25s ease; }
-    .navbar__menu a.active { color: var(--color-nav-text); }
-    .navbar__menu a.active::after { width: calc(100% - 40px); background: var(--color-nav-text); }
     .navbar__menu a:hover { color: var(--color-green); }
     .navbar__menu a:hover::after { width: calc(100% - 40px); }
     .navbar__auth { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; color: var(--color-nav-text); justify-content: flex-end; white-space: nowrap; }
     .navbar__auth a { color: var(--color-nav-text); text-decoration: none; transition: color 0.2s; }
     .navbar__auth a:hover { color: var(--color-green); }
 
-    /* ── Hero ── */
-    .hero {
-      position: relative; width: 100%; height: 461px; overflow: hidden;
-    }
-    .hero__bg {
-      position: absolute; inset: 0; width: 100%; height: 100%;
-      object-fit: cover; object-position: center;
-    }
-    .hero__overlay {
-      position: absolute; inset: 0;
-      background: rgba(74, 28, 13, 0.6);
-    }
-    .hero__content {
-      position: relative; z-index: 2; height: 100%;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 80px;
-    }
-    .hero__logo { width: 299px; object-fit: contain; }
-    .hero__books-text {
-      font-family: var(--font-display); font-size: 61px;
-      color: #d0b58b; line-height: 1.2; text-align: right;
-    }
-
-    /* ── 신간 소식 Banner ── */
-    .news-banner {
-      width: 100%; min-height: 380px; background: #ffecd4;
-      display: flex; flex-direction: row; overflow: hidden; position: relative;
-    }
-    .news-banner__left {
-      flex: 0 0 55%; position: relative; overflow: hidden;
-    }
-    .news-banner__img-blur {
-      position: absolute; top: -49px; left: -36px;
-      width: calc(100% + 36px); height: calc(100% + 98px);
-      object-fit: cover; opacity: 0.2; filter: blur(2px); pointer-events: none;
-    }
-    .news-banner__img-clear {
-      position: absolute; top: -49px; left: 0;
-      width: 100%; height: calc(100% + 98px);
-      object-fit: cover; pointer-events: none;
-    }
-    .news-banner__text {
-      position: relative; z-index: 2;
-      padding: 60px 0 60px 80px;
-      display: flex; flex-direction: column; gap: 16px;
-    }
-    .news-banner__tag {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 117px; height: 40px; background: #343434; border-radius: 8px;
-      font-family: var(--font-main); font-weight: 700; font-size: 21px; color: #fff;
-      flex-shrink: 0;
-    }
-    .news-banner__headline {
-      font-family: var(--font-main); font-weight: 700; font-size: 30px;
-      color: #343434; line-height: 1.55;
-    }
-    .news-banner__sub {
-      font-family: var(--font-main); font-weight: 700; font-size: 22px;
-      color: #9fa0a0; line-height: 1.5;
-    }
-
-    /* Floating white card on right */
-    .news-banner__card {
-      position: absolute; right: 0; top: 50%; transform: translateY(-50%);
-      width: 380px;
-      background: #fff;
-      border-radius: 45px 0 0 45px;
-      box-shadow: -8px 0 40px rgba(0,0,0,0.10);
-      padding: 44px 48px;
-      display: flex; flex-direction: column; gap: 32px;
-      z-index: 10;
-    }
-    .news-banner__cta {
-      display: flex; flex-direction: column; gap: 12px;
-    }
-    .news-banner__cta-title {
-      font-family: var(--font-main); font-weight: 700; font-size: 22px; color: #343434;
-    }
-    .news-banner__cta-sub {
-      font-family: var(--font-main); font-weight: 400; font-size: 16px; color: #9fa0a0;
-    }
-    .news-banner__btn {
-      display: inline-flex; align-items: center; justify-content: center;
-      height: 58px; padding: 0 36px;
-      background: var(--color-green); border: none; border-radius: 19px;
-      font-family: var(--font-main); font-weight: 700; font-size: 20px; color: #fff;
-      cursor: pointer; text-decoration: none; transition: background 0.2s, transform 0.1s;
-      align-self: flex-start;
-    }
-    .news-banner__btn:hover { background: #83a34c; }
-    .news-banner__btn:active { transform: scale(0.97); }
-    .news-banner__divider {
-      border: none; border-top: 1px solid #eee;
-    }
-
-    /* ── Section Header ── */
-    .section-header {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 80px; margin-bottom: 32px;
-    }
-    .section-header__title {
-      font-family: var(--font-main); font-weight: 700; font-size: 26px; color: #000;
-    }
-    .section-header__more {
-      font-family: var(--font-main); font-weight: 500; font-size: 18px;
-      color: var(--color-nav-text); text-decoration: none; transition: color 0.2s;
-    }
-    .section-header__more:hover { color: var(--color-green); }
-
-    /* ── 최근 출판 도서 ── */
-    .recent-books {
-      padding: 70px 80px 60px;
-    }
-    .books-grid {
-      display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px 24px;
-    }
-    .book-card { cursor: pointer; }
-    .book-card__cover {
-      width: 100%; aspect-ratio: 277/369; border-radius: 14px; overflow: hidden;
-      background: #eee; margin-bottom: 16px; transition: box-shadow 0.2s;
-    }
-    .book-card:hover .book-card__cover { box-shadow: 0 8px 24px rgba(0,0,0,0.15); }
-    .book-card__cover img {
-      width: 100%; height: 100%; object-fit: cover; display: block;
-      transition: transform 0.35s ease;
-    }
-    .book-card:hover .book-card__cover img { transform: scale(1.04); }
-    .book-card__title {
-      font-family: var(--font-main); font-weight: 600; font-size: 17px;
-      color: #000; margin-bottom: 6px; line-height: 1.4;
-    }
-    .book-card__author {
-      font-family: var(--font-main); font-weight: 400; font-size: 15px; color: #777;
-    }
-
-    /* ── 모든 도서 보기 ── */
-    .all-books {
-      padding: 0 80px 80px;
-    }
-    .all-books__header {
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 32px; padding-bottom: 16px; border-bottom: 2px solid #eee;
-    }
-    .all-books__title {
-      font-family: var(--font-main); font-weight: 600; font-size: 24px; color: #000;
-    }
-    .sort-btns {
-      display: flex; align-items: center; gap: 0; font-family: var(--font-main); font-size: 18px;
-    }
-    .sort-btn {
-      background: none; border: none; cursor: pointer; padding: 4px 8px;
-      font-family: var(--font-main); font-size: 18px; font-weight: 400;
-      color: #343434; transition: color 0.2s;
-    }
-    .sort-btn.active { color: var(--color-green); font-weight: 600; }
-    .sort-divider { color: #d9d9d9; font-size: 20px; padding: 0 4px; user-select: none; }
-
-    /* ── Pagination ── */
-    .pagination {
-      display: flex; align-items: center; justify-content: center;
-      gap: 8px; margin-top: 60px; font-family: var(--font-main); font-size: 20px;
-    }
-    .page-btn {
-      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
-      border: none; background: none; cursor: pointer; font-family: var(--font-main);
-      font-size: 20px; color: #000; border-radius: 4px; transition: color 0.2s;
-    }
-    .page-btn.active { color: var(--color-green); font-weight: 700; }
-    .page-btn:hover:not(.active) { color: var(--color-green); }
-    .page-btn.arrow { color: #555; font-size: 22px; }
-    .page-btn.arrow:hover { color: var(--color-green); }
-
-    /* ── 모달 ── */
-    .modal-overlay {
-      display: none; position: fixed; inset: 0; z-index: 500;
-      background: rgba(0,0,0,0.5);
-      align-items: center; justify-content: center;
-    }
-    .modal-overlay.open { display: flex; }
-    .modal {
-      width: 540px; background: #fff;
-      border-radius: 21px; overflow: hidden;
-      box-shadow: 0 20px 60px rgba(0,0,0,0.2);
-      animation: modalIn 0.25s ease;
-    }
-    @keyframes modalIn {
-      from { opacity: 0; transform: scale(0.95) translateY(8px); }
-      to   { opacity: 1; transform: scale(1) translateY(0); }
-    }
-    .modal__header {
-      background: var(--color-green); height: 56px;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .modal__title {
-      font-family: var(--font-main); font-weight: 700; font-size: 20px; color: #fff;
-    }
-    .modal__body {
-      padding: 48px 40px 40px;
-      display: flex; flex-direction: column; align-items: center;
-      gap: 16px; text-align: center; justify-content: center;
-    }
-    .modal__email {
-      font-family: var(--font-main); font-weight: 600; font-size: 24px; color: #000;
-    }
-    .modal__desc {
-      font-family: var(--font-main); font-weight: 400; font-size: 20px;
-      color: #000; line-height: 1.7;
-    }
-    .modal__confirm {
-      margin-top: 20px; width: 135px; height: 51px;
-      background: var(--color-green); border: none; border-radius: 13px;
-      font-family: var(--font-main); font-weight: 700; font-size: 18px; color: #fff;
-      cursor: pointer; transition: background 0.2s, transform 0.1s;
-    }
-    .modal__confirm:hover { background: #83a34c; }
-    .modal__confirm:active { transform: scale(0.97); }
+    /* ── Coming Soon ── */
+    .coming-soon { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 80px 40px; text-align: center; }
+    .coming-soon__icon { font-size: 72px; line-height: 1; }
+    .coming-soon__title { font-family: var(--font-display); font-size: 52px; color: var(--color-green); line-height: 1.2; }
+    .coming-soon__badge { display: inline-flex; align-items: center; justify-content: center; padding: 8px 24px; background: #f5f5f5; border-radius: 999px; font-family: var(--font-main); font-weight: 700; font-size: 16px; color: var(--color-nav-text); letter-spacing: 0.08em; }
+    .coming-soon__desc { font-family: var(--font-main); font-weight: 400; font-size: 20px; color: #555; line-height: 1.8; max-width: 480px; }
+    .coming-soon__back { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; padding: 14px 32px; background: var(--color-green); border-radius: 14px; font-family: var(--font-main); font-weight: 700; font-size: 17px; color: #fff; text-decoration: none; transition: background 0.2s, transform 0.1s; }
+    .coming-soon__back:hover { background: #83a34c; }
+    .coming-soon__back:active { transform: scale(0.97); }
 
     /* ── Footer ── */
     .footer { width: 100%; height: 237px; background: var(--color-footer-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 36px 0 0; }
@@ -280,8 +66,8 @@
         <li><a href="about.html">회사 소개</a></li>
         <li><a href="https://www.youtube.com/@%EC%83%81%EC%83%81%EB%8F%99%ED%96%89%EB%A7%88%EB%8B%B9" target="_blank">상상동행마당</a></li>
         <li><a href="sangsang-zine.html">상상ZINE</a></li>
-        <li><a href="sangsang-books.html" class="active">상상서가</a></li>
-        <li><a href="#">상상STORY</a></li>
+        <li><a href="https://smartstore.naver.com/sangsangbook" target="_blank">상상서가</a></li>
+        <li><a href="sangsang-story.html">상상STORY</a></li>
       </ul>
     </nav>
     <div class="navbar__auth">
@@ -289,101 +75,23 @@
       <span>|</span>
       <a href="signup.html">회원가입</a>
     </div>
-          <button class="navbar__hamburger" onclick="toggleMenu()" aria-label="메뉴 열기">
-        <span></span><span></span><span></span>
-      </button>
+    <button class="navbar__hamburger" onclick="toggleMenu()" aria-label="메뉴 열기">
+      <span></span><span></span><span></span>
+    </button>
   </header>
 
-  <!-- ══ Hero ══ -->
-  <section class="hero">
-    <img class="hero__bg" src="assets/books-hero-bg.png" alt="상상서가 배경" />
-    <div class="hero__overlay"></div>
-    <div class="hero__content">
-      <img class="hero__logo" src="assets/sangsang-books-logo.svg" alt="상상서가 로고" />
-      <p class="hero__books-text">SangSang<br>Books</p>
-    </div>
-  </section>
-
-  <!-- ══ 신간 소식 Banner ══ -->
-  <div class="news-banner">
-    <div class="news-banner__left">
-      <img class="news-banner__img-blur" src="assets/banner2-img.png" alt="" />
-      <img class="news-banner__img-clear" src="assets/banner2-img.png" alt="신간 소식" />
-      <div class="news-banner__text">
-        <span class="news-banner__tag">신간 소식</span>
-        <p class="news-banner__headline">상처 없이 피는 꽃이 어디 있으리?<br>치유의 도구가 되는 시</p>
-        <p class="news-banner__sub">[사막의 생존자] 김선태 시집</p>
-      </div>
-    </div>
-
-    <!-- Floating white card -->
-    <div class="news-banner__card">
-      <div class="news-banner__cta">
-        <p class="news-banner__cta-title">8주 완성 아카데미</p>
-        <p class="news-banner__cta-sub">글쓰기부터 출판까지, 함께 완성합니다</p>
-        <button class="news-banner__btn" onclick="openModal('modalAcademy')">신청하기</button>
-      </div>
-      <hr class="news-banner__divider" />
-      <div class="news-banner__cta">
-        <p class="news-banner__cta-title">내가 쓴 원고</p>
-        <p class="news-banner__cta-sub">상상서가에 원고를 투고해 보세요</p>
-        <button class="news-banner__btn" onclick="openModal('modalSubmit')">투고하기</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ 최근 출판 도서 ══ -->
-  <section class="recent-books">
-    <div class="section-header" style="padding: 0; margin-bottom: 32px;">
-      <h2 class="section-header__title">최근 출판 도서</h2>
-      <a href="#" class="section-header__more">더보기 ›</a>
-    </div>
-    <div class="books-grid">
-      <div class="book-card">
-        <div class="book-card__cover">
-          <img src="assets/book-cover-1.png" alt="도서 1" />
-        </div>
-        <p class="book-card__title">세 대의 가야금을 위한<br>민요 앙상블</p>
-        <p class="book-card__author">최진</p>
-      </div>
-      <div class="book-card">
-        <div class="book-card__cover">
-          <img src="assets/book-cover-2.png" alt="도서 2" />
-        </div>
-        <p class="book-card__title">세 대의 가야금을 위한<br>민요 앙상블</p>
-        <p class="book-card__author">최진</p>
-      </div>
-      <div class="book-card">
-        <div class="book-card__cover">
-          <img src="assets/book-cover-3.png" alt="도서 3" />
-        </div>
-        <p class="book-card__title">세 대의 가야금을 위한<br>민요 앙상블</p>
-        <p class="book-card__author">최진</p>
-      </div>
-      <div class="book-card">
-        <div class="book-card__cover">
-          <img src="assets/book-cover-4.png" alt="도서 4" />
-        </div>
-        <p class="book-card__title">세 대의 가야금을 위한<br>민요 앙상블</p>
-        <p class="book-card__author">최진</p>
-      </div>
-    </div>
-  </section>
-
-  <!-- ══ 모든 도서 보기 ══ -->
-  <section class="all-books">
-    <div class="all-books__header">
-      <h2 class="all-books__title">모든 도서 보기</h2>
-      <div class="sort-btns">
-        <button class="sort-btn active" id="btnNewest" onclick="sortBy('newest')">최신순</button>
-        <span class="sort-divider">|</span>
-        <button class="sort-btn" id="btnOldest" onclick="sortBy('oldest')">출판순</button>
-      </div>
-    </div>
-
-    <div class="books-grid" id="booksGrid"></div>
-    <div class="pagination" id="pagination"></div>
-  </section>
+  <!-- ══ Coming Soon ══ -->
+  <main class="coming-soon">
+    <div class="coming-soon__icon">📚</div>
+    <h1 class="coming-soon__title">상상서가</h1>
+    <span class="coming-soon__badge">COMING SOON</span>
+    <p class="coming-soon__desc">
+      엄선된 책들을 소개하는 상상서가가 곧 찾아옵니다.<br>
+      좋은 책과 함께하는 시간을 준비하고 있어요.<br>
+      조금만 기다려 주세요!
+    </p>
+    <a href="index.html" class="coming-soon__back">← 홈으로 돌아가기</a>
+  </main>
 
   <!-- ══ Footer ══ -->
   <footer class="footer">
@@ -392,123 +100,21 @@
       <a href="#">제휴 문의</a>
     </div>
     <p class="footer__info">
-      <span class="bold">(주)상상이엔씨</span>
+      <span class="bold">(주)상상아이앤씨</span>
       <span class="regular"> | 대표 김대석 | </span>
       <span class="bold">사업자번호</span>
-      <span class="regular"> 000-000-000 | </span>
+      <span class="regular"> 750-81-01874 | </span>
       <span class="bold">주소</span>
-      <span class="regular"> 서울 성동구 아차산로 107 (성수동2가) 베컴빌딩 201호 | </span>
+      <span class="regular"> 인천시 서구 가남로 295 | </span>
       <span class="bold">문의</span>
-      <span class="regular"> 02-123-4567 | </span>
+      <span class="regular"> 02-6397-0153 | </span>
       <span class="bold">FAX</span>
-      <span class="regular"> 02-123-4567</span>
+      <span class="regular"> 02-6442-4278 | </span>
+      <span class="bold">E-mail</span>
+      <span class="regular"> sangsang1210@naver.com</span>
     </p>
     <p class="footer__copy">© 2026 Sangsang I&amp;C Co., Ltd. All rights reserved.</p>
   </footer>
-
-  <script>
-    const ITEMS_PER_PAGE = 8;
-
-    const books = [
-      { title: '세 대의 가야금을 위한 민요 앙상블', author: '최진', date: '2026-04-10', img: 'assets/book-placeholder.png' },
-      { title: '세 대의 가야금을 위한 민요 앙상블', author: '최진', date: '2026-03-22', img: 'assets/book-placeholder.png' },
-      { title: '세 대의 가야금을 위한 민요 앙상블', author: '최진', date: '2026-02-14', img: 'assets/book-placeholder.png' },
-      { title: '세 대의 가야금을 위한 민요 앙상블', author: '최진', date: '2026-01-30', img: 'assets/book-placeholder.png' },
-      { title: '세 대의 가야금을 위한 민요 앙상블', author: '최진', date: '2025-12-05', img: 'assets/book-placeholder.png' },
-      { title: '세 대의 가야금을 위한 민요 앙상블', author: '최진', date: '2025-11-18', img: 'assets/book-placeholder.png' },
-      { title: '세 대의 가야금을 위한 민요 앙상블', author: '최진', date: '2025-10-07', img: 'assets/book-placeholder.png' },
-      { title: '세 대의 가야금을 위한 민요 앙상블', author: '최진', date: '2025-09-20', img: 'assets/book-placeholder.png' },
-      { title: '세 대의 가야금을 위한 민요 앙상블', author: '최진', date: '2025-08-11', img: 'assets/book-placeholder.png' },
-      { title: '세 대의 가야금을 위한 민요 앙상블', author: '최진', date: '2025-07-03', img: 'assets/book-placeholder.png' },
-    ];
-
-    let currentSort = 'newest';
-    let currentPage = 1;
-
-    function sortBy(type) {
-      currentSort = type;
-      currentPage = 1;
-      document.getElementById('btnNewest').classList.toggle('active', type === 'newest');
-      document.getElementById('btnOldest').classList.toggle('active', type === 'oldest');
-      render();
-    }
-
-    function getSorted() {
-      return [...books].sort((a, b) => {
-        const da = new Date(a.date), db = new Date(b.date);
-        return currentSort === 'newest' ? db - da : da - db;
-      });
-    }
-
-    function render() {
-      const sorted = getSorted();
-      const totalPages = Math.ceil(sorted.length / ITEMS_PER_PAGE);
-      const start = (currentPage - 1) * ITEMS_PER_PAGE;
-      const page = sorted.slice(start, start + ITEMS_PER_PAGE);
-
-      document.getElementById('booksGrid').innerHTML = page.map(b => `
-        <div class="book-card">
-          <div class="book-card__cover">
-            <img src="${b.img}" alt="${b.title}" />
-          </div>
-          <p class="book-card__title">${b.title}</p>
-          <p class="book-card__author">${b.author}</p>
-        </div>
-      `).join('');
-
-      const pg = document.getElementById('pagination');
-      let html = `<button class="page-btn arrow" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled style="opacity:0.3;cursor:default"' : ''}>&lt;</button>`;
-      for (let i = 1; i <= totalPages; i++) {
-        html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
-      }
-      html += `<button class="page-btn arrow" onclick="goPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled style="opacity:0.3;cursor:default"' : ''}>&gt;</button>`;
-      pg.innerHTML = html;
-    }
-
-    function goPage(p) {
-      const total = Math.ceil(getSorted().length / ITEMS_PER_PAGE);
-      if (p < 1 || p > total) return;
-      currentPage = p;
-      render();
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    render();
-  </script>
-
-  <!-- ══ 상상 아카데미 모달 (신청하기) ══ -->
-  <div class="modal-overlay" id="modalAcademy" onclick="closeModalOutside(event, 'modalAcademy')">
-    <div class="modal">
-      <div class="modal__header">
-        <span class="modal__title">상상 아카데미</span>
-      </div>
-      <div class="modal__body">
-        <p class="modal__desc">아직 준비 중인 서비스입니다!</p>
-        <button class="modal__confirm" onclick="closeModal('modalAcademy')">확인</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ══ 원고 투고하기 모달 ══ -->
-  <div class="modal-overlay" id="modalSubmit" onclick="closeModalOutside(event, 'modalSubmit')">
-    <div class="modal">
-      <div class="modal__header">
-        <span class="modal__title">내가 쓴 원고 투고하기</span>
-      </div>
-      <div class="modal__body">
-        <p class="modal__email">sangsang1210@naver.com</p>
-        <p class="modal__desc">해당 이메일로 원고를 보내 주시면 검토 후<br>개별 연락을 드리겠습니다.</p>
-        <button class="modal__confirm" onclick="closeModal('modalSubmit')">확인</button>
-      </div>
-    </div>
-  </div>
-
-  <script>
-    function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow = 'hidden'; }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow = ''; }
-    function closeModalOutside(e, id) { if (e.target === e.currentTarget) closeModal(id); }
-    document.addEventListener('keydown', function(e) { if (e.key === 'Escape') { document.querySelectorAll('.modal-overlay.open').forEach(m => m.classList.remove('open')); document.body.style.overflow = ''; } });
-  </script>
 
   <!-- ══ 모바일 오버레이 ══ -->
   <div class="mobile-nav-overlay" id="mobileOverlay" onclick="closeMenu()"></div>
@@ -523,11 +129,11 @@
       <button class="mobile-nav__close" onclick="closeMenu()">✕</button>
     </div>
     <ul class="mobile-nav__menu">
-        <li><a href="about.html">회사 소개</a></li>
-        <li><a href="https://www.youtube.com/@%EC%83%81%EC%83%81%EB%8F%99%ED%96%89%EB%A7%88%EB%8B%B9" target="_blank">상상동행마당</a></li>
-        <li><a href="sangsang-zine.html">상상ZINE</a></li>
-        <li><a href="sangsang-books.html" class="active">상상서가</a></li>
-        <li><a href="sangsang-story.html">상상STORY</a></li>
+      <li><a href="about.html">회사 소개</a></li>
+      <li><a href="https://www.youtube.com/@%EC%83%81%EC%83%81%EB%8F%99%ED%96%89%EB%A7%88%EB%8B%B9" target="_blank">상상동행마당</a></li>
+      <li><a href="sangsang-zine.html">상상ZINE</a></li>
+      <li><a href="https://smartstore.naver.com/sangsangbook" target="_blank">상상서가</a></li>
+      <li><a href="sangsang-story.html">상상STORY</a></li>
     </ul>
     <div class="mobile-nav__auth">
       <a href="login.html">로그인</a>
