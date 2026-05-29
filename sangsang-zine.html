@@ -262,8 +262,9 @@
         ? `<img src="${thumbUrl}" alt="${title}" loading="lazy" />`
         : `<div class="post-card__thumb-placeholder">📖</div>`;
 
+      const detailLink = `zine-magazine.html?id=${post.id}`;
       return `
-        <a class="post-card" href="${link}" target="_blank" rel="noopener">
+        <a class="post-card" href="${detailLink}">
           <div class="post-card__thumb">${thumbHtml}</div>
           <div class="post-card__body">
             <div class="post-card__meta">
