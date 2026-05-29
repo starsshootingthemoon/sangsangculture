@@ -426,25 +426,6 @@
       flex-shrink: 0;
     }
 
-    /* ── Static Banner ── */
-    /* ── 광고 배너 (이미지 교체형) ── */
-    .ad-banner-section { margin-top: 48px; }
-    .ad-banner {
-      display: none;
-      width: 100%;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    .ad-banner.active { display: block; }
-    .ad-banner__img {
-      width: 100%;
-      height: 380px;
-      object-fit: cover;
-      display: block;
-      transition: opacity 0.2s;
-    }
-    .ad-banner:hover .ad-banner__img { opacity: 0.95; }
-
     /* Divider between sections */
     .section-divider {
       width: calc(100% - 120px);
@@ -550,29 +531,6 @@
     <div class="swiper-dots" id="swiperDots" style="display:none;"></div>
   </div>
 
-  <!-- ══ 광고 배너 (새로고침마다 랜덤 1개 표시) ══
-       👉 이미지 교체 방법: assets/ad-banner-1.png / ad-banner-2.png / ad-banner-3.png 파일을 교체
-       👉 링크 변경:  각 <a> 태그의 href 속성 수정
-  ══ -->
-  <div class="ad-banner-section">
-
-    <!-- 배너 1 ← assets/ad-banner-1.png 교체 / href로 링크 지정 -->
-    <a href="#" class="ad-banner">
-      <img class="ad-banner__img" src="assets/ad-banner-1.svg" alt="광고 배너 1" />
-    </a>
-
-    <!-- 배너 2 ← assets/ad-banner-2.png 교체 / href로 링크 지정 -->
-    <a href="#" class="ad-banner">
-      <img class="ad-banner__img" src="assets/ad-banner-2.svg" alt="광고 배너 2" />
-    </a>
-
-    <!-- 배너 3 ← assets/ad-banner-3.png 교체 / href로 링크 지정 -->
-    <a href="#" class="ad-banner">
-      <img class="ad-banner__img" src="assets/ad-banner-3.svg" alt="광고 배너 3" />
-    </a>
-
-  </div>
-
   <!-- ══ 예정된 공연 ══ -->
   <section class="section">
     <div class="section__header">
@@ -655,13 +613,6 @@
   </footer>
 
   <script>
-    /* ── 랜덤 정적 배너 ── */
-    (function() {
-      const banners = document.querySelectorAll('.ad-banner');
-      const pick = Math.floor(Math.random() * banners.length);
-      banners[pick].classList.add('active');
-    })();
-
     /* ── Swiper: WordPress "madang-banner" 카테고리 동적 로드 ── */
     const WP_API_BASE = 'http://sangsang153.com/wp-json/wp/v2';
     const MADANG_BANNER_CATEGORY = 'madang-banner';
