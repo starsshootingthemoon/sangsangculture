@@ -87,6 +87,23 @@
     }
     .img-slider__dot.active { background: #fff; }
 
+    .img-slider__btn {
+      position: absolute; top: 50%; transform: translateY(-50%);
+      z-index: 10; width: 48px; height: 48px;
+      background: rgba(0,0,0,0.4); border: none; border-radius: 50%;
+      color: #fff; font-size: 28px; line-height: 44px;
+      cursor: pointer; transition: background 0.2s;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .img-slider__btn:hover { background: rgba(0,0,0,0.65); }
+    .img-slider__btn--prev { left: 16px; }
+    .img-slider__btn--next { right: 16px; }
+
+    /* WordPress 갤러리/이미지가 본문에 남았을 때도 깔끔하게 */
+    .article__content .wp-block-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0; }
+    .article__content .wp-block-gallery figure { margin: 0; }
+    .article__content .wp-block-gallery img { margin: 0; aspect-ratio: 1; object-fit: cover; }
+
     /* Section divider + label */
     .section-divider { border: none; border-top: 1.5px solid #d9d9d9; margin: 48px 0 32px; }
 
@@ -186,13 +203,12 @@
     <p class="article__issue" id="articleIssue">불러오는 중…</p>
     <h1 class="article__title" id="articleTitle">​</h1>
 
-    <!-- Featured image -->
-    <div class="img-slider" id="featuredWrap" style="display:none;">
-      <div class="img-slider__track">
-        <div class="img-slider__slide">
-          <img id="featuredImg" src="" alt="" />
-        </div>
-      </div>
+    <!-- 상단 슬라이더 (갤러리 블록 OR 대표 이미지) -->
+    <div class="img-slider" id="topSlider" style="display:none;">
+      <div class="img-slider__track" id="sliderTrack"></div>
+      <button class="img-slider__btn img-slider__btn--prev" id="sliderPrev" aria-label="이전" style="display:none;">‹</button>
+      <button class="img-slider__btn img-slider__btn--next" id="sliderNext" aria-label="다음" style="display:none;">›</button>
+      <div class="img-slider__dots" id="sliderDots" style="display:none;"></div>
     </div>
 
     <!-- Content body -->
@@ -260,6 +276,69 @@
         `<div class="article__error">📭 ${msg}<br><br><a href="sangsang-zine.html" style="color:var(--color-green);text-decoration:underline;">매거진 목록으로 돌아가기 →</a></div>`;
     }
 
+    // 슬라이더 상태
+    let sliderImages = [];
+    let currentSlide = 0;
+
+    function renderSlider() {
+      if (sliderImages.length === 0) {
+        document.getElementById('topSlider').style.display = 'none';
+        return;
+      }
+      document.getElementById('topSlider').style.display = 'block';
+
+      // 슬라이드 트랙
+      const track = document.getElementById('sliderTrack');
+      track.innerHTML = sliderImages.map(img =>
+        `<div class="img-slider__slide"><img src="${img.src}" alt="${img.alt || ''}" /></div>`
+      ).join('');
+
+      // 2장 이상일 때만 화살표 + 닷
+      if (sliderImages.length > 1) {
+        document.getElementById('sliderPrev').style.display = 'flex';
+        document.getElementById('sliderNext').style.display = 'flex';
+        const dotsEl = document.getElementById('sliderDots');
+        dotsEl.style.display = 'flex';
+        dotsEl.innerHTML = sliderImages.map((_, i) =>
+          `<button class="img-slider__dot ${i === 0 ? 'active' : ''}" onclick="goSlide(${i})" aria-label="${i+1}번 슬라이드"></button>`
+        ).join('');
+      }
+      goSlide(0);
+    }
+
+    function goSlide(idx) {
+      currentSlide = (idx + sliderImages.length) % sliderImages.length;
+      const track = document.getElementById('sliderTrack');
+      track.style.transform = `translateX(-${currentSlide * 100}%)`;
+      document.querySelectorAll('.img-slider__dot').forEach((d, i) =>
+        d.classList.toggle('active', i === currentSlide)
+      );
+    }
+
+    document.getElementById('sliderPrev').addEventListener('click', () => goSlide(currentSlide - 1));
+    document.getElementById('sliderNext').addEventListener('click', () => goSlide(currentSlide + 1));
+
+    /**
+     * 본문 HTML에서 첫 번째 갤러리 블록을 찾아 이미지 배열로 반환.
+     * 추출한 갤러리는 본문에서 제거.
+     */
+    function extractGallery(html) {
+      const wrapper = document.createElement('div');
+      wrapper.innerHTML = html;
+
+      // wp-block-gallery (Gutenberg) 또는 .gallery (Classic)
+      const gallery = wrapper.querySelector('.wp-block-gallery, .gallery');
+      if (!gallery) return { images: [], html: wrapper.innerHTML };
+
+      const imgs = Array.from(gallery.querySelectorAll('img')).map(img => ({
+        src: img.getAttribute('src') || img.getAttribute('data-src'),
+        alt: img.getAttribute('alt') || '',
+      })).filter(x => x.src);
+
+      gallery.remove();
+      return { images: imgs, html: wrapper.innerHTML };
+    }
+
     async function loadArticle() {
       const id = getQueryParam('id');
       if (!id) {
@@ -276,18 +355,21 @@
         document.getElementById('articleTitle').innerHTML = post.title?.rendered || '';
         document.title = `${(post.title?.rendered || '글').replace(/<[^>]+>/g, '')} — 상상ZINE`;
 
-        // 대표 이미지
-        try {
-          const featured = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
-          if (featured) {
-            document.getElementById('featuredImg').src = featured;
-            document.getElementById('featuredImg').alt = post.title?.rendered || '';
-            document.getElementById('featuredWrap').style.display = 'block';
-          }
-        } catch (e) {}
+        // 본문에서 갤러리 추출
+        const rawContent = post.content?.rendered || '';
+        const { images: galleryImgs, html: cleanedContent } = extractGallery(rawContent);
 
-        // 본문
-        document.getElementById('articleContent').innerHTML = post.content?.rendered || '';
+        // 상단 슬라이더: 갤러리가 있으면 갤러리, 없으면 대표 이미지 1장
+        if (galleryImgs.length > 0) {
+          sliderImages = galleryImgs;
+        } else {
+          const featured = post._embedded?.['wp:featuredmedia']?.[0]?.source_url;
+          if (featured) sliderImages = [{ src: featured, alt: post.title?.rendered || '' }];
+        }
+        renderSlider();
+
+        // 본문 (갤러리 제거된 상태) — 본문 내 이미지는 그대로 흐름대로 표시
+        document.getElementById('articleContent').innerHTML = cleanedContent;
 
         // 작성자
         try {
