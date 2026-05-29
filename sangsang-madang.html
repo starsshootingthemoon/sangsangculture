@@ -567,55 +567,18 @@
       </button>
   </header>
 
-  <!-- ══ Swiper Banner ══ -->
+  <!-- ══ Swiper Banner (WordPress madang-banner 카테고리 자동 로드) ══ -->
   <div class="swiper-wrapper" id="swiper">
     <div class="swiper-track" id="swiperTrack">
-
-      <!-- Slide 1 -->
-      <div class="swiper-slide">
-        <img class="slide-bg" src="assets/swiper-banner-1.png" alt="배너 1" />
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <img class="slide-content__logo" src="assets/sangsang-stage-logo.svg" alt="SangSang Stage" />
-          <p class="slide-content__title">상상동행마당</p>
-          <p class="slide-content__sub">함께 만들어가는 문화 공연의 장</p>
-        </div>
-      </div>
-
-      <!-- Slide 2 -->
-      <div class="swiper-slide">
-        <img class="slide-bg" src="assets/swiper-banner-2.png" alt="배너 2" />
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <img class="slide-content__logo" src="assets/sangsang-stage-logo.svg" alt="SangSang Stage" />
-          <p class="slide-content__title">예정된 공연</p>
-          <p class="slide-content__sub">다가오는 공연 일정을 확인하세요</p>
-        </div>
-      </div>
-
-      <!-- Slide 3 -->
-      <div class="swiper-slide">
-        <img class="slide-bg" src="assets/swiper-banner-3.png" alt="배너 3" />
-        <div class="slide-overlay"></div>
-        <div class="slide-content">
-          <img class="slide-content__logo" src="assets/sangsang-stage-logo.svg" alt="SangSang Stage" />
-          <p class="slide-content__title">지난 공연</p>
-          <p class="slide-content__sub">소중한 순간들을 다시 만나보세요</p>
-        </div>
-      </div>
-
+      <!-- 슬라이드는 JS에서 동적으로 채워짐 -->
     </div>
 
     <!-- Arrow Buttons -->
-    <button class="swiper-btn swiper-btn--prev" id="swiperPrev" aria-label="이전">&#8249;</button>
-    <button class="swiper-btn swiper-btn--next" id="swiperNext" aria-label="다음">&#8250;</button>
+    <button class="swiper-btn swiper-btn--prev" id="swiperPrev" aria-label="이전" style="display:none;">&#8249;</button>
+    <button class="swiper-btn swiper-btn--next" id="swiperNext" aria-label="다음" style="display:none;">&#8250;</button>
 
     <!-- Dots -->
-    <div class="swiper-dots" id="swiperDots">
-      <button class="swiper-dot active" data-index="0" aria-label="슬라이드 1"></button>
-      <button class="swiper-dot" data-index="1" aria-label="슬라이드 2"></button>
-      <button class="swiper-dot" data-index="2" aria-label="슬라이드 3"></button>
-    </div>
+    <div class="swiper-dots" id="swiperDots" style="display:none;"></div>
   </div>
 
   <!-- ══ 광고 배너 (새로고침마다 랜덤 1개 표시) ══
@@ -730,41 +693,117 @@
       banners[pick].classList.add('active');
     })();
 
-    /* ── Swiper Logic ── */
-    const track   = document.getElementById('swiperTrack');
-    const dots    = document.querySelectorAll('.swiper-dot');
-    const btnPrev = document.getElementById('swiperPrev');
-    const btnNext = document.getElementById('swiperNext');
-    const total   = 3;
-    let current   = 0;
+    /* ── Swiper: WordPress "madang-banner" 카테고리 동적 로드 ── */
+    const MADANG_BANNER_CATEGORY = 'madang-banner';
+    let current = 0;
+    let total = 0;
     let autoTimer = null;
 
-    function goTo(index) {
-      current = (index + total) % total;
-      track.style.transform = `translateX(-${current * 100}%)`;
-      dots.forEach((d, i) => d.classList.toggle('active', i === current));
+    function escapeHtmlMd(s) {
+      return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function stripHtmlMd(h) {
+      const t = document.createElement('div'); t.innerHTML = h;
+      return (t.textContent || t.innerText || '').trim();
     }
 
-    function startAuto() {
-      autoTimer = setInterval(() => goTo(current + 1), 4000);
+    /**
+     * 발췌(요약) 형식: "서브타이틀|링크 URL"
+     * 예: "함께 만들어가는 문화 공연의 장|madang-concerts-upcoming.html"
+     */
+    function buildMadangSlide(post) {
+      const title = post.title?.rendered || '';
+      const excerpt = stripHtmlMd(post.excerpt?.rendered || '');
+      const [subtitle = '', link = ''] = excerpt.split('|').map(s => s.trim());
+      let bg = '';
+      try { bg = post._embedded['wp:featuredmedia'][0].source_url; } catch (e) {}
+      const isExternal = link.startsWith('http');
+      const linkWrapOpen = link ? `<a href="${link}" ${isExternal ? 'target="_blank" rel="noopener"' : ''} style="position:absolute;inset:0;z-index:3;">` : '';
+      const linkWrapClose = link ? '</a>' : '';
+      return `
+        <div class="swiper-slide">
+          ${bg ? `<img class="slide-bg" src="${bg}" alt="${escapeHtmlMd(title)}" />` : ''}
+          <div class="slide-overlay"></div>
+          <div class="slide-content">
+            <img class="slide-content__logo" src="assets/sangsang-stage-logo.svg" alt="SangSang Stage" />
+            <p class="slide-content__title">${title}</p>
+            ${subtitle ? `<p class="slide-content__sub">${escapeHtmlMd(subtitle)}</p>` : ''}
+          </div>
+          ${linkWrapOpen}${linkWrapClose}
+        </div>`;
     }
 
-    function stopAuto() {
-      clearInterval(autoTimer);
+    function buildMadangFallback() {
+      return `
+        <div class="swiper-slide">
+          <img class="slide-bg" src="assets/madang-banner-bg.png" alt="" />
+          <div class="slide-overlay"></div>
+          <div class="slide-content">
+            <img class="slide-content__logo" src="assets/sangsang-stage-logo.svg" alt="SangSang Stage" />
+            <p class="slide-content__title">상상동행마당</p>
+            <p class="slide-content__sub">함께 만들어가는 문화 공연의 장</p>
+          </div>
+        </div>`;
     }
 
-    btnPrev.addEventListener('click', () => { stopAuto(); goTo(current - 1); startAuto(); });
-    btnNext.addEventListener('click', () => { stopAuto(); goTo(current + 1); startAuto(); });
+    function setupSwiperControls() {
+      const dots = document.querySelectorAll('.swiper-dot');
+      const btnPrev = document.getElementById('swiperPrev');
+      const btnNext = document.getElementById('swiperNext');
+      const track = document.getElementById('swiperTrack');
 
-    dots.forEach(dot => {
-      dot.addEventListener('click', () => {
-        stopAuto();
-        goTo(parseInt(dot.dataset.index));
+      function goTo(index) {
+        current = (index + total) % total;
+        track.style.transform = `translateX(-${current * 100}%)`;
+        dots.forEach((d, i) => d.classList.toggle('active', i === current));
+      }
+      function startAuto() { if (total > 1) autoTimer = setInterval(() => goTo(current + 1), 4000); }
+      function stopAuto() { clearInterval(autoTimer); }
+
+      if (total > 1) {
+        btnPrev.style.display = 'flex';
+        btnNext.style.display = 'flex';
+        btnPrev.addEventListener('click', () => { stopAuto(); goTo(current - 1); startAuto(); });
+        btnNext.addEventListener('click', () => { stopAuto(); goTo(current + 1); startAuto(); });
+        dots.forEach(dot => {
+          dot.addEventListener('click', () => { stopAuto(); goTo(parseInt(dot.dataset.index)); startAuto(); });
+        });
         startAuto();
-      });
-    });
+      }
+    }
 
-    startAuto();
+    async function loadMadangBanners() {
+      const track = document.getElementById('swiperTrack');
+      const dotsEl = document.getElementById('swiperDots');
+      try {
+        const catRes = await fetch(`${WP_API_BASE}/categories?slug=${MADANG_BANNER_CATEGORY}`);
+        const cats = await catRes.json();
+        if (!cats || cats.length === 0) throw new Error('no category');
+        const catId = cats[0].id;
+
+        const postsRes = await fetch(`${WP_API_BASE}/posts?categories=${catId}&per_page=10&_embed&status=publish&orderby=date&order=asc`);
+        const posts = await postsRes.json();
+        if (!posts || posts.length === 0) throw new Error('no posts');
+
+        track.innerHTML = posts.map(buildMadangSlide).join('');
+        total = posts.length;
+      } catch (e) {
+        track.innerHTML = buildMadangFallback();
+        total = 1;
+      }
+
+      // 닷 생성
+      if (total > 1) {
+        dotsEl.style.display = 'flex';
+        dotsEl.innerHTML = Array.from({ length: total }, (_, i) =>
+          `<button class="swiper-dot ${i === 0 ? 'active' : ''}" data-index="${i}" aria-label="슬라이드 ${i+1}"></button>`
+        ).join('');
+      }
+
+      setupSwiperControls();
+    }
+
+    loadMadangBanners();
   </script>
 
   <!-- ══ 모바일 오버레이 ══ -->
