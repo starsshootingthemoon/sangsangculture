@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>공연 상세 — SangSang Culture</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
+  <link rel="stylesheet" href="assets/mobile.css" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    @font-face { font-family: 'Y_Spotlight'; src: local('Y Spotlight'), local('YSpotlight'); }
+    :root {
+      --color-green: #95B658; --color-nav-text: #9FA0A0; --color-footer-bg: #343434;
+      --font-main: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
+      --font-display: 'Y_Spotlight', 'Noto Serif KR', Georgia, serif;
+    }
+    html { background: #fff; } body { width: 100%; max-width: 1440px; margin: 0 auto; min-height: 100vh; font-family: var(--font-main); background: #fff; display: flex; flex-direction: column; }
+
+    /* Navbar */
+    .navbar { position: sticky; top: 0; z-index: 100; width: 100%; height: 145px; background: #fff; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 0 40px; box-shadow: 0 1px 0 rgba(0,0,0,0.06); }
+    .navbar__logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .navbar__logo-img { width: 95px; height: 67px; object-fit: contain; }
+    .navbar__logo-text { font-family: var(--font-display); font-size: 22px; color: var(--color-green); line-height: 1.3; white-space: nowrap; }
+    .navbar__menu { display: flex; align-items: center; list-style: none; justify-content: center; }
+    .navbar__menu li { position: relative; padding: 0 20px; }
+    .navbar__menu a { font-family: var(--font-main); font-weight: 600; font-size: 16px; color: var(--color-nav-text); text-decoration: none; display: block; padding-bottom: 8px; transition: color 0.2s; }
+    .navbar__menu a::after { content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); width: 0; height: 4px; background: var(--color-green); border-radius: 2px; transition: width 0.25s ease; }
+    .navbar__menu a:hover { color: var(--color-green); }
+    .navbar__menu a:hover::after { width: calc(100% - 40px); }
+    .navbar__menu a.active { color: var(--color-nav-text); }
+    .navbar__menu a.active::after { width: calc(100% - 40px); background: var(--color-nav-text); }
+    .navbar__auth { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 600; color: var(--color-nav-text); justify-content: flex-end; white-space: nowrap; }
+    .navbar__auth a { color: var(--color-nav-text); text-decoration: none; transition: color 0.2s; }
+    .navbar__auth a:hover { color: var(--color-green); }
+
+    /* Concert Detail */
+    .concert { flex: 1; padding: 60px 80px 0; }
+    .concert__back { display: inline-flex; align-items: center; gap: 6px; font-family: var(--font-main); font-weight: 500; font-size: 15px; color: var(--color-nav-text); text-decoration: none; margin-bottom: 32px; transition: color 0.2s; }
+    .concert__back:hover { color: var(--color-green); }
+
+    .concert__top { display: grid; grid-template-columns: minmax(280px, 380px) 1fr; gap: 60px; align-items: start; margin-bottom: 60px; }
+    .concert__poster { width: 100%; border-radius: 10px; overflow: hidden; background: #f0f0f0; aspect-ratio: 3/4; }
+    .concert__poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .concert__poster-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 64px; color: #ccc; background: linear-gradient(135deg, #f5f5f5, #e8e8e8); }
+
+    .concert__info { display: flex; flex-direction: column; gap: 18px; }
+    .concert__title-ko { font-family: var(--font-main); font-weight: 700; font-size: 28px; color: #000; line-height: 1.3; }
+    .concert__title-en { font-family: var(--font-main); font-weight: 500; font-size: 18px; color: #555; margin-top: -10px; }
+
+    .concert__meta { display: grid; grid-template-columns: 100px 1fr; gap: 18px 24px; margin-top: 16px; padding-top: 24px; border-top: 1px solid #eee; }
+    .concert__meta-label { font-family: var(--font-main); font-weight: 600; font-size: 15px; color: #888; }
+    .concert__meta-value { font-family: var(--font-main); font-weight: 500; font-size: 15px; color: #222; line-height: 1.5; }
+
+    .concert__btn { display: inline-flex; align-items: center; justify-content: center; width: 100%; max-width: 560px; height: 60px; background: var(--color-green); border: none; border-radius: 12px; font-family: var(--font-main); font-weight: 700; font-size: 18px; color: #fff; text-decoration: none; cursor: pointer; transition: background 0.2s, transform 0.1s; margin-top: 32px; }
+    .concert__btn:hover { background: #83a34c; }
+    .concert__btn:active { transform: scale(0.98); }
+    .concert__btn--disabled { background: #ccc; cursor: not-allowed; pointer-events: none; }
+
+    /* Tab Header */
+    .concert__tab-header { display: flex; align-items: center; gap: 32px; padding-bottom: 14px; border-bottom: 1.5px solid #ddd; margin-bottom: 40px; }
+    .concert__tab { font-family: var(--font-main); font-weight: 700; font-size: 18px; color: #000; padding-bottom: 12px; margin-bottom: -16px; border-bottom: 3px solid #000; }
+
+    /* Notice */
+    .concert__notice { margin-bottom: 60px; }
+    .concert__notice-title { font-family: var(--font-main); font-weight: 700; font-size: 16px; color: #000; margin-bottom: 12px; }
+    .concert__notice-list { font-family: var(--font-main); font-weight: 400; font-size: 14px; color: #555; line-height: 2; }
+
+    /* Content (WordPress content) */
+    .concert__content { max-width: 100%; margin-bottom: 80px; }
+    .concert__content img { max-width: 100%; height: auto; display: block; margin: 24px 0; border-radius: 8px; }
+    .concert__content p { font-family: var(--font-main); font-weight: 400; font-size: 16px; color: #222; line-height: 1.8; margin-bottom: 20px; }
+    .concert__content h2 { font-family: var(--font-main); font-weight: 700; font-size: 22px; margin: 36px 0 16px; color: #000; }
+    .concert__content h3 { font-family: var(--font-main); font-weight: 700; font-size: 18px; margin: 28px 0 12px; color: #000; }
+    .concert__content figure { margin: 24px 0; }
+    .concert__content figure img { margin: 0; }
+    .concert__content figcaption { font-size: 13px; color: #888; text-align: center; margin-top: 8px; }
+    .concert__content .wp-block-gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin: 24px 0; }
+    .concert__content .wp-block-gallery img { margin: 0; aspect-ratio: 1; object-fit: cover; }
+
+    .concert__state { text-align: center; padding: 80px 20px; color: #888; font-size: 16px; }
+
+    /* Footer */
+    .footer { width: 100%; height: 237px; background: var(--color-footer-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 36px 0 0; }
+    .footer__links { display: flex; gap: 70px; margin-bottom: 28px; }
+    .footer__links a { font-family: var(--font-main); font-weight: 700; font-size: 20px; color: #fff; text-decoration: none; transition: opacity 0.2s; }
+    .footer__links a:hover { opacity: 0.75; }
+    .footer__info { font-family: var(--font-main); font-weight: 600; font-size: 13px; color: #fff; text-align: center; line-height: 1.8; margin-bottom: 20px; }
+    .footer__info .regular { font-weight: 400; } .footer__info .bold { font-weight: 700; }
+    .footer__copy { font-family: var(--font-main); font-weight: 600; font-size: 15px; color: #fff; text-align: center; }
+
+    @media (max-width: 900px) {
+      .concert { padding: 32px 20px 0; }
+      .concert__top { grid-template-columns: 1fr; gap: 32px; }
+      .concert__poster { max-width: 400px; margin: 0 auto; }
+      .concert__meta { grid-template-columns: 90px 1fr; gap: 14px 16px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="navbar">
+    <a href="index.html" class="navbar__logo">
+      <img class="navbar__logo-img" src="assets/logo.svg" alt="SangSang Culture 로고" />
+      <span class="navbar__logo-text">SangSang<br>Culture</span>
+    </a>
+    <nav>
+      <ul class="navbar__menu">
+        <li><a href="about.html">회사 소개</a></li>
+        <li><a href="sangsang-madang.html" class="active">상상동행마당</a></li>
+        <li><a href="sangsang-zine.html">상상ZINE</a></li>
+        <li><a href="https://smartstore.naver.com/sangsangbook" target="_blank">상상서가</a></li>
+        <li><a href="sangsang-story.html">상상STORY</a></li>
+      </ul>
+    </nav>
+    <div class="navbar__auth">
+      <a href="login.html">로그인</a>
+      <span>|</span>
+      <a href="signup.html">회원가입</a>
+    </div>
+    <button class="navbar__hamburger" onclick="toggleMenu()" aria-label="메뉴 열기">
+      <span></span><span></span><span></span>
+    </button>
+  </header>
+
+  <main class="concert" id="concertRoot">
+    <a href="sangsang-madang.html" class="concert__back" id="backLink">← 상상동행마당으로</a>
+
+    <div class="concert__state" id="loadingState">공연 정보를 불러오는 중…</div>
+
+    <div id="concertContent" style="display:none;">
+      <div class="concert__top">
+        <div class="concert__poster">
+          <img id="posterImg" src="" alt="" style="display:none;" />
+          <div class="concert__poster-placeholder" id="posterPlaceholder">🎭</div>
+        </div>
+        <div class="concert__info">
+          <h1 class="concert__title-ko" id="titleKo">​</h1>
+          <p class="concert__title-en" id="titleEn" style="display:none;"></p>
+          <div class="concert__meta" id="metaGrid"></div>
+          <a class="concert__btn" id="ctaBtn" href="#" target="_blank" rel="noopener">예매 신청하기</a>
+        </div>
+      </div>
+
+      <div class="concert__tab-header">
+        <span class="concert__tab">공연 소개</span>
+      </div>
+
+      <div class="concert__notice" id="noticeSection">
+        <p class="concert__notice-title">공지사항</p>
+        <div class="concert__notice-list">
+          ※ 공연 당일은 어떠한 사유에서도 티켓 변경 및 환불이 되지 않습니다.<br>
+          ※ 예매자는 본 안내 페이지의 모든 내용을 숙지하고 동의한 것으로 간주됩니다.
+        </div>
+      </div>
+
+      <div class="concert__content" id="contentArea"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__links">
+      <a href="contact.html?type=ad">광고 문의</a>
+      <a href="contact.html?type=partnership">제휴 문의</a>
+    </div>
+    <p class="footer__info">
+      <span class="bold">(주)상상아이앤씨</span>
+      <span class="regular"> | 대표 김대석 | </span>
+      <span class="bold">사업자번호</span>
+      <span class="regular"> 750-81-01874 | </span>
+      <span class="bold">주소</span>
+      <span class="regular"> 인천시 서구 가남로 295 | </span>
+      <span class="bold">문의</span>
+      <span class="regular"> 02-6397-0153 | </span>
+      <span class="bold">FAX</span>
+      <span class="regular"> 02-6442-4278 | </span>
+      <span class="bold">E-mail</span>
+      <span class="regular"> sangsang1210@naver.com</span>
+    </p>
+    <p class="footer__copy">© 2026 Sangsang I&amp;C Co., Ltd. All rights reserved.</p>
+  </footer>
+
+  <div class="mobile-nav-overlay" id="mobileOverlay" onclick="closeMenu()"></div>
+  <nav class="mobile-nav" id="mobileNav">
+    <div class="mobile-nav__header">
+      <a href="index.html" class="mobile-nav__logo" onclick="closeMenu()">
+        <img class="mobile-nav__logo-img" src="assets/logo.svg" alt="SangSang Culture" />
+        <span class="mobile-nav__logo-text">SangSang<br>Culture</span>
+      </a>
+      <button class="mobile-nav__close" onclick="closeMenu()">✕</button>
+    </div>
+    <ul class="mobile-nav__menu">
+      <li><a href="about.html">회사 소개</a></li>
+      <li><a href="sangsang-madang.html" class="active">상상동행마당</a></li>
+      <li><a href="sangsang-zine.html">상상ZINE</a></li>
+      <li><a href="https://smartstore.naver.com/sangsangbook" target="_blank">상상서가</a></li>
+      <li><a href="sangsang-story.html">상상STORY</a></li>
+    </ul>
+    <div class="mobile-nav__auth">
+      <a href="login.html">로그인</a>
+      <div class="auth-divider"></div>
+      <a href="signup.html">회원가입</a>
+    </div>
+  </nav>
+
+  <script src="assets/mobile.js"></script>
+  <script>
+    const WP_API_BASE = window.location.origin + '/wp-json/wp/v2';
+
+    function getParam(n) { return new URLSearchParams(window.location.search).get(n); }
+    function escapeHtml(s) { return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+    function stripHtml(h) { const t = document.createElement('div'); t.innerHTML = h; return (t.textContent || t.innerText || '').trim(); }
+
+    /**
+     * 발췌 형식: 장소|일시|공연시간|출연진|관람연령|버튼링크
+     * (필수 항목 없음. 빈 항목은 그냥 비워두면 됨)
+     */
+    function parseMeta(excerpt) {
+      const parts = excerpt.split('|').map(s => s.trim());
+      return {
+        venue:    parts[0] || '',
+        date:     parts[1] || '',
+        duration: parts[2] || '',
+        cast:     parts[3] || '',
+        age:      parts[4] || '',
+        link:     parts[5] || '',
+      };
+    }
+
+    function showError(msg) {
+      document.getElementById('loadingState').innerHTML =
+        `<div style="font-size:48px;margin-bottom:12px;">📭</div>${msg}<br><br><a href="sangsang-madang.html" style="color:var(--color-green);text-decoration:underline;">← 상상동행마당으로 돌아가기</a>`;
+    }
+
+    async function loadConcert() {
+      const id = getParam('id');
+      const type = getParam('type') || 'upcoming'; // upcoming | past
+      if (!id) { showError('잘못된 접근입니다.'); return; }
+
+      // 뒤로가기 링크
+      const backLink = document.getElementById('backLink');
+      if (type === 'past') {
+        backLink.href = 'madang-concerts-past.html';
+        backLink.textContent = '← 지난 공연 목록으로';
+      } else {
+        backLink.href = 'madang-concerts-upcoming.html';
+        backLink.textContent = '← 예정된 공연 목록으로';
+      }
+
+      const restBase = type === 'past' ? 'past-concerts' : 'upcoming-concerts';
+      try {
+        const res = await fetch(`${WP_API_BASE}/${restBase}/${id}`, { cache: 'no-store' });
+        if (!res.ok) throw new Error();
+        const post = await res.json();
+
+        // 제목
+        const title = post.title?.rendered || '(제목 없음)';
+        document.getElementById('titleKo').innerHTML = title;
+        document.title = stripHtml(title) + ' — SangSang Culture';
+
+        // 포스터 이미지
+        if (post.featured_image_url) {
+          const img = document.getElementById('posterImg');
+          img.src = post.featured_image_url;
+          img.alt = stripHtml(title);
+          img.style.display = 'block';
+          document.getElementById('posterPlaceholder').style.display = 'none';
+        }
+
+        // 메타 정보
+        const excerpt = stripHtml(post.excerpt?.rendered || '');
+        const meta = parseMeta(excerpt);
+        const metaGrid = document.getElementById('metaGrid');
+        const metaItems = [
+          { label: '장소',      value: meta.venue },
+          { label: '공연 기간', value: meta.date },
+          { label: '공연 시간', value: meta.duration },
+          { label: '출연진',    value: meta.cast },
+          { label: '관람 연령', value: meta.age },
+        ];
+        metaGrid.innerHTML = metaItems
+          .filter(m => m.value)
+          .map(m => `
+            <div class="concert__meta-label">${m.label}</div>
+            <div class="concert__meta-value">${escapeHtml(m.value)}</div>
+          `).join('');
+
+        // CTA 버튼
+        const ctaBtn = document.getElementById('ctaBtn');
+        if (meta.link) {
+          ctaBtn.href = meta.link;
+          ctaBtn.textContent = type === 'past' ? '▶ 영상 보러가기' : '예매 신청하기';
+        } else {
+          // 링크 없으면 버튼 숨김
+          ctaBtn.style.display = 'none';
+        }
+
+        // 본문 (글 + 설명 사진)
+        document.getElementById('contentArea').innerHTML = post.content?.rendered || '';
+
+        // 로딩 상태 → 콘텐츠로 전환
+        document.getElementById('loadingState').style.display = 'none';
+        document.getElementById('concertContent').style.display = 'block';
+      } catch (e) {
+        showError('공연 정보를 불러올 수 없습니다.');
+      }
+    }
+    loadConcert();
+  </script>
+</body>
+</html>

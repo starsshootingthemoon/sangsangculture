@@ -225,7 +225,7 @@
             name: p.title?.rendered || '',
             date: dateStr || p.date.slice(0, 10).replace(/-/g, '.'),
             img,
-            link: p.link || '#',
+            link: `concert.html?id=${p.id}&type=upcoming`,
           };
         });
         render();
@@ -270,7 +270,7 @@
 
       const grid = document.getElementById('posterGrid');
       grid.innerHTML = page.map(c => `
-        <a class="poster-card" href="${c.link}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:block;">
+        <a class="poster-card" href="${c.link}" style="text-decoration:none;color:inherit;display:block;">
           <div class="poster-card__img-wrap">
             <img class="poster-card__img" src="${c.img}" alt="${escapeHtml(c.name)}" loading="lazy" />
           </div>

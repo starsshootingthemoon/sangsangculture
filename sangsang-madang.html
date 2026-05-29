@@ -810,14 +810,14 @@
       return post.featured_image_url || 'assets/concert-poster.png';
     }
 
-    function buildPosterCard(post) {
+    function buildPosterCard(post, type) {
       const title = escapeHtml2(post.title?.rendered || '');
       const thumb = getThumbUrl(post);
       const excerpt = stripHtml2(post.excerpt?.rendered || '');
       const [venue = '', dateStr = ''] = excerpt.split('|').map(s => s.trim());
-      const link = post.link || '#';
+      const link = `concert.html?id=${post.id}&type=${type}`;
       return `
-        <a class="poster-card" href="${link}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:block;">
+        <a class="poster-card" href="${link}" style="text-decoration:none;color:inherit;display:block;">
           <img class="poster-card__img" src="${thumb}" alt="${title}" loading="lazy" />
           <div class="poster-card__overlay">
             <div class="poster-card__info-row">
@@ -836,17 +836,17 @@
         </a>`;
     }
 
-    async function loadConcerts(restBase, gridId) {
+    async function loadConcerts(restBase, gridId, type) {
       try {
         const res = await fetch(`${WP_API_BASE}/${restBase}?per_page=4&_embed`);
         const posts = await res.json();
         if (!posts || posts.length === 0) return;
-        document.getElementById(gridId).innerHTML = posts.map(buildPosterCard).join('');
+        document.getElementById(gridId).innerHTML = posts.map(p => buildPosterCard(p, type)).join('');
       } catch (e) {}
     }
 
-    loadConcerts('upcoming-concerts', 'upcomingGrid');
-    loadConcerts('past-concerts', 'pastGrid');
+    loadConcerts('upcoming-concerts', 'upcomingGrid', 'upcoming');
+    loadConcerts('past-concerts', 'pastGrid', 'past');
   </script>
 </body>
 </html>
