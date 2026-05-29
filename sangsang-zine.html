@@ -411,8 +411,7 @@
 
     function buildZineBannerSlide(post) {
       const title = post.title?.rendered || '';
-      let bg = 'assets/zine-hero-bg.png';
-      try { bg = post._embedded['wp:featuredmedia'][0].source_url || bg; } catch (e) {}
+      const bg = post.featured_image_url || 'assets/zine-hero-bg.png';
       return `<div class="page-banner"><img class="page-banner__bg" src="${bg}" alt="${title.replace(/<[^>]+>/g,'')}" /></div>`;
     }
 

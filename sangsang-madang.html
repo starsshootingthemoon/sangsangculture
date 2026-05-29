@@ -636,8 +636,7 @@
       const title = post.title?.rendered || '';
       const excerpt = stripHtmlMd(post.excerpt?.rendered || '');
       const link = excerpt.split('|').pop().trim();
-      let bg = '';
-      try { bg = post._embedded['wp:featuredmedia'][0].source_url; } catch (e) {}
+      const bg = post.featured_image_url || '';
       const isLink = link.startsWith('http') || link.endsWith('.html');
       const isExternal = link.startsWith('http');
       const imgHtml = bg ? `<img class="slide-bg" src="${bg}" alt="${escapeHtmlMd(title)}" />` : '';
@@ -808,11 +807,7 @@
     }
 
     function getThumbUrl(post) {
-      try {
-        const media = post._embedded?.['wp:featuredmedia'];
-        if (media && media[0] && media[0].source_url) return media[0].source_url;
-      } catch (e) {}
-      return 'assets/concert-poster.png';
+      return post.featured_image_url || 'assets/concert-poster.png';
     }
 
     function buildPosterCard(post) {

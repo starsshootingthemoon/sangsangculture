@@ -218,8 +218,7 @@
         if (!posts || posts.length === 0) { showEmpty(); return; }
 
         concerts = posts.map(p => {
-          let img = 'assets/concert-poster.png';
-          try { img = p._embedded['wp:featuredmedia'][0].source_url || img; } catch(e) {}
+          const img = p.featured_image_url || 'assets/concert-poster.png';
           const excerpt = stripHtml(p.excerpt?.rendered || '');
           const [venue = '', dateStr = ''] = excerpt.split('|').map(s => s.trim());
           return {
