@@ -35,30 +35,25 @@
     .navbar__auth a { color: var(--color-nav-text); text-decoration: none; transition: color 0.2s; }
     .navbar__auth a:hover { color: var(--color-green); }
 
-    /* ── Page Banner Swiper (WordPress 연동) ── */
-    .page-banner-wrap { position: relative; width: 100%; height: 380px; overflow: hidden; }
+    /* ── Page Title + Banner Swiper (이미지 그대로 표시) ── */
+    .page-title-wrap { width: 100%; padding: 40px 60px 20px; text-align: left; }
+    .page-title { font-family: var(--font-display); font-size: 44px; color: var(--color-green); line-height: 1.1; margin-bottom: 6px; }
+    .page-title-sub { font-family: var(--font-main); font-size: 16px; color: var(--color-nav-text); font-weight: 400; }
+
+    .page-banner-wrap { position: relative; width: 100%; aspect-ratio: 16/9; overflow: hidden; background: #f5f5f5; }
     .pb-track { display: flex; width: 100%; height: 100%; transition: transform 0.5s cubic-bezier(0.4,0,0.2,1); }
     .page-banner { flex: 0 0 100%; position: relative; width: 100%; height: 100%; overflow: hidden; }
-    .page-banner__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
-    .page-banner__overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.48); }
-    .page-banner__content {
-      position: relative; z-index: 2; height: 100%;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      gap: 18px; text-align: center; color: #fff; padding: 0 20px;
-    }
-    .page-banner__logo { width: 220px; object-fit: contain; filter: brightness(0) invert(1); }
-    .page-banner__title { font-family: var(--font-main); font-weight: 800; font-size: 48px; line-height: 1.15; color: #fff; }
-    .page-banner__sub { font-family: var(--font-main); font-weight: 500; font-size: 20px; color: rgba(255,255,255,0.88); }
+    .page-banner__bg { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
 
     .pb-btn {
       position: absolute; top: 50%; transform: translateY(-50%);
       z-index: 10; width: 48px; height: 48px;
-      background: rgba(255,255,255,0.18); border: 2px solid rgba(255,255,255,0.55);
+      background: rgba(0,0,0,0.35); border: 2px solid rgba(255,255,255,0.55);
       border-radius: 50%; color: #fff; font-size: 24px;
       cursor: pointer; display: flex; align-items: center; justify-content: center;
       transition: background 0.2s; backdrop-filter: blur(4px);
     }
-    .pb-btn:hover { background: rgba(255,255,255,0.32); }
+    .pb-btn:hover { background: rgba(0,0,0,0.6); }
     .pb-btn--prev { left: 24px; } .pb-btn--next { right: 24px; }
 
     .pb-dots {
@@ -67,16 +62,15 @@
     }
     .pb-dot {
       width: 9px; height: 9px; border-radius: 50%;
-      background: rgba(255,255,255,0.45); cursor: pointer;
+      background: rgba(255,255,255,0.55); cursor: pointer;
       border: none; padding: 0; transition: background 0.2s, transform 0.2s;
+      box-shadow: 0 0 4px rgba(0,0,0,0.4);
     }
     .pb-dot.active { background: #fff; transform: scale(1.25); }
 
     @media (max-width: 768px) {
-      .page-banner-wrap { height: 280px; }
-      .page-banner__title { font-size: 32px; }
-      .page-banner__sub { font-size: 16px; }
-      .page-banner__logo { width: 160px; }
+      .page-title-wrap { padding: 24px 20px 12px; }
+      .page-title { font-size: 30px; }
       .pb-btn { display: none; }
     }
 
@@ -167,7 +161,13 @@
     </button>
   </header>
 
-  <!-- ══ Banner Swiper (WordPress zine-banner 카테고리 자동 로드) ══ -->
+  <!-- ══ Page Title ══ -->
+  <div class="page-title-wrap">
+    <h1 class="page-title">상상ZINE</h1>
+    <p class="page-title-sub">상상문화의 매거진과 이야기를 전합니다</p>
+  </div>
+
+  <!-- ══ Banner Swiper (이미지 그대로 표시 · WordPress zine-banner 카테고리) ══ -->
   <div class="page-banner-wrap">
     <div class="pb-track" id="pbTrack">
       <!-- 슬라이드는 JS에서 동적으로 채워짐 -->
@@ -427,33 +427,14 @@
     let pbCurrent = 0, pbTotal = 0, pbAutoTimer = null;
 
     function buildZineBannerSlide(post) {
-      const title = post.title?.rendered || '상상ZINE';
-      const sub = stripHtml(post.excerpt?.rendered || '');
+      const title = post.title?.rendered || '';
       let bg = 'assets/zine-hero-bg.png';
       try { bg = post._embedded['wp:featuredmedia'][0].source_url || bg; } catch (e) {}
-      return `
-        <div class="page-banner">
-          <img class="page-banner__bg" src="${bg}" alt="" />
-          <div class="page-banner__overlay"></div>
-          <div class="page-banner__content">
-            <img class="page-banner__logo" src="assets/sangsang-zine-logo.svg" alt="상상ZINE" />
-            <h1 class="page-banner__title">${title}</h1>
-            ${sub ? `<p class="page-banner__sub">${sub.replace(/[<>]/g, '')}</p>` : ''}
-          </div>
-        </div>`;
+      return `<div class="page-banner"><img class="page-banner__bg" src="${bg}" alt="${title.replace(/<[^>]+>/g,'')}" /></div>`;
     }
 
     function buildZineBannerFallback() {
-      return `
-        <div class="page-banner">
-          <img class="page-banner__bg" src="assets/zine-hero-bg.png" alt="" />
-          <div class="page-banner__overlay"></div>
-          <div class="page-banner__content">
-            <img class="page-banner__logo" src="assets/sangsang-zine-logo.svg" alt="상상ZINE" />
-            <h1 class="page-banner__title">상상ZINE</h1>
-            <p class="page-banner__sub">상상문화의 매거진과 이야기를 전합니다</p>
-          </div>
-        </div>`;
+      return `<div class="page-banner"><img class="page-banner__bg" src="assets/zine-hero-bg.png" alt="상상ZINE" /></div>`;
     }
 
     function pbGoTo(idx) {
