@@ -35,15 +35,55 @@
     .navbar__auth a { color: var(--color-nav-text); text-decoration: none; transition: color 0.2s; }
     .navbar__auth a:hover { color: var(--color-green); }
 
-    /* ── Coming Soon ── */
-    .coming-soon { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; padding: 80px 40px; text-align: center; }
-    .coming-soon__icon { font-size: 72px; line-height: 1; }
-    .coming-soon__title { font-family: var(--font-display); font-size: 52px; color: var(--color-green); line-height: 1.2; }
-    .coming-soon__badge { display: inline-flex; align-items: center; justify-content: center; padding: 8px 24px; background: #f5f5f5; border-radius: 999px; font-family: var(--font-main); font-weight: 700; font-size: 16px; color: var(--color-nav-text); letter-spacing: 0.08em; }
-    .coming-soon__desc { font-family: var(--font-main); font-weight: 400; font-size: 20px; color: #555; line-height: 1.8; max-width: 480px; }
-    .coming-soon__back { display: inline-flex; align-items: center; gap: 6px; margin-top: 16px; padding: 14px 32px; background: var(--color-green); border-radius: 14px; font-family: var(--font-main); font-weight: 700; font-size: 17px; color: #fff; text-decoration: none; transition: background 0.2s, transform 0.1s; }
-    .coming-soon__back:hover { background: #83a34c; }
-    .coming-soon__back:active { transform: scale(0.97); }
+    /* ── Zine Section ── */
+    .zine-section { flex: 1; padding: 60px 60px 80px; }
+    .zine-section__header { margin-bottom: 48px; }
+    .zine-section__title { font-family: var(--font-display); font-size: 42px; color: var(--color-green); margin-bottom: 10px; }
+    .zine-section__subtitle { font-size: 16px; color: var(--color-nav-text); font-weight: 400; }
+
+    /* ── Post Grid ── */
+    .post-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 36px 28px; }
+
+    .post-card { display: flex; flex-direction: column; text-decoration: none; color: inherit; border-radius: 16px; overflow: hidden; border: 1px solid #f0f0f0; transition: box-shadow 0.2s, transform 0.2s; background: #fff; }
+    .post-card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.1); transform: translateY(-4px); }
+
+    .post-card__thumb { width: 100%; aspect-ratio: 16/9; overflow: hidden; background: #f5f5f5; flex-shrink: 0; }
+    .post-card__thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s; }
+    .post-card:hover .post-card__thumb img { transform: scale(1.04); }
+    .post-card__thumb-placeholder { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #e8f2d8 0%, #c8dfa0 100%); font-size: 48px; }
+
+    .post-card__body { padding: 22px 22px 24px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+    .post-card__meta { display: flex; align-items: center; gap: 10px; }
+    .post-card__category { font-size: 12px; font-weight: 700; color: var(--color-green); background: #f0f8e4; padding: 3px 10px; border-radius: 999px; letter-spacing: 0.04em; }
+    .post-card__date { font-size: 12px; color: #aaa; font-weight: 400; }
+    .post-card__title { font-size: 17px; font-weight: 700; color: #222; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+    .post-card__excerpt { font-size: 14px; color: #666; line-height: 1.75; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; flex: 1; }
+    .post-card__read-more { margin-top: 6px; font-size: 13px; font-weight: 700; color: var(--color-green); }
+
+    /* ── Loading / Error / Empty ── */
+    .zine-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; padding: 80px 40px; text-align: center; }
+    .zine-state__icon { font-size: 56px; }
+    .zine-state__msg { font-size: 18px; color: #888; font-weight: 400; line-height: 1.7; }
+
+    .skeleton { background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%); background-size: 200% 100%; animation: shimmer 1.4s infinite; border-radius: 8px; }
+    @keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+    .skeleton-card { border-radius: 16px; border: 1px solid #f0f0f0; overflow: hidden; }
+    .skeleton-thumb { width: 100%; aspect-ratio: 16/9; }
+    .skeleton-body { padding: 22px; display: flex; flex-direction: column; gap: 10px; }
+    .skeleton-line { height: 14px; border-radius: 4px; }
+    .skeleton-line.sm { width: 40%; }
+    .skeleton-line.md { width: 70%; height: 18px; }
+    .skeleton-line.lg { width: 100%; }
+
+    /* ── Load More ── */
+    .load-more-wrap { text-align: center; margin-top: 52px; }
+    .load-more-btn { display: inline-flex; align-items: center; gap: 8px; padding: 14px 40px; background: #fff; border: 2px solid var(--color-green); border-radius: 14px; font-family: var(--font-main); font-weight: 700; font-size: 16px; color: var(--color-green); cursor: pointer; transition: background 0.2s, color 0.2s; }
+    .load-more-btn:hover { background: var(--color-green); color: #fff; }
+    .load-more-btn:disabled { opacity: 0.5; cursor: default; }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) { .post-grid { grid-template-columns: repeat(2, 1fr); } .zine-section { padding: 48px 40px 64px; } }
+    @media (max-width: 640px) { .post-grid { grid-template-columns: 1fr; gap: 24px; } .zine-section { padding: 32px 20px 56px; } .zine-section__title { font-size: 32px; } }
 
     /* ── Footer ── */
     .footer { width: 100%; height: 237px; background: var(--color-footer-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 36px 0 0; }
@@ -82,17 +122,49 @@
     </button>
   </header>
 
-  <!-- ══ Coming Soon ══ -->
-  <main class="coming-soon">
-    <div class="coming-soon__icon">📖</div>
-    <h1 class="coming-soon__title">상상ZINE</h1>
-    <span class="coming-soon__badge">COMING SOON</span>
-    <p class="coming-soon__desc">
-      상상문화의 매거진과 뉴스레터가 곧 찾아옵니다.<br>
-      다양한 문화 콘텐츠를 담아 선보일게요.<br>
-      조금만 기다려 주세요!
-    </p>
-    <a href="index.html" class="coming-soon__back">← 홈으로 돌아가기</a>
+  <!-- ══ Zine Section ══ -->
+  <main class="zine-section">
+    <div class="zine-section__header">
+      <h1 class="zine-section__title">상상ZINE</h1>
+      <p class="zine-section__subtitle">상상문화의 매거진과 이야기를 전합니다</p>
+    </div>
+
+    <!-- 로딩 스켈레톤 -->
+    <div class="post-grid" id="postGrid">
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-thumb"></div>
+        <div class="skeleton-body">
+          <div class="skeleton skeleton-line sm"></div>
+          <div class="skeleton skeleton-line md"></div>
+          <div class="skeleton skeleton-line lg"></div>
+          <div class="skeleton skeleton-line lg"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-thumb"></div>
+        <div class="skeleton-body">
+          <div class="skeleton skeleton-line sm"></div>
+          <div class="skeleton skeleton-line md"></div>
+          <div class="skeleton skeleton-line lg"></div>
+          <div class="skeleton skeleton-line lg"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-thumb"></div>
+        <div class="skeleton-body">
+          <div class="skeleton skeleton-line sm"></div>
+          <div class="skeleton skeleton-line md"></div>
+          <div class="skeleton skeleton-line lg"></div>
+          <div class="skeleton skeleton-line lg"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="load-more-wrap" id="loadMoreWrap" style="display:none;">
+      <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()">
+        더 보기 ↓
+      </button>
+    </div>
   </main>
 
   <!-- ══ Footer ══ -->
@@ -144,5 +216,137 @@
     </div>
   </nav>
   <script src="assets/mobile.js"></script>
+  <script>
+    // ── WordPress REST API 연동 ──────────────────────────────────
+    const WP_BASE = 'http://sangsang153.com/wp-json/wp/v2';
+    const PER_PAGE = 9;
+    let currentPage = 1;
+    let totalPages = 1;
+
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function stripHtml(html) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      return tmp.textContent || tmp.innerText || '';
+    }
+
+    function getCategoryName(post) {
+      try {
+        const terms = post._embedded?.['wp:term'];
+        if (terms && terms[0] && terms[0].length > 0) return terms[0][0].name;
+      } catch(e) {}
+      return '상상ZINE';
+    }
+
+    function getThumbnailUrl(post) {
+      try {
+        const media = post._embedded?.['wp:featuredmedia'];
+        if (media && media[0] && media[0].source_url) return media[0].source_url;
+      } catch(e) {}
+      return null;
+    }
+
+    function buildCard(post) {
+      const title = post.title?.rendered || '(제목 없음)';
+      const excerpt = stripHtml(post.excerpt?.rendered || '').trim();
+      const date = formatDate(post.date);
+      const link = post.link || '#';
+      const category = getCategoryName(post);
+      const thumbUrl = getThumbnailUrl(post);
+
+      const thumbHtml = thumbUrl
+        ? `<img src="${thumbUrl}" alt="${title}" loading="lazy" />`
+        : `<div class="post-card__thumb-placeholder">📖</div>`;
+
+      return `
+        <a class="post-card" href="${link}" target="_blank" rel="noopener">
+          <div class="post-card__thumb">${thumbHtml}</div>
+          <div class="post-card__body">
+            <div class="post-card__meta">
+              <span class="post-card__category">${category}</span>
+              <span class="post-card__date">${date}</span>
+            </div>
+            <h2 class="post-card__title">${title}</h2>
+            ${excerpt ? `<p class="post-card__excerpt">${excerpt}</p>` : ''}
+            <span class="post-card__read-more">자세히 보기 →</span>
+          </div>
+        </a>`;
+    }
+
+    function showError() {
+      document.getElementById('postGrid').innerHTML = `
+        <div class="zine-state" style="grid-column:1/-1">
+          <div class="zine-state__icon">📭</div>
+          <p class="zine-state__msg">글을 불러오는 중 오류가 발생했습니다.<br>잠시 후 다시 시도해 주세요.</p>
+        </div>`;
+    }
+
+    function showEmpty() {
+      document.getElementById('postGrid').innerHTML = `
+        <div class="zine-state" style="grid-column:1/-1">
+          <div class="zine-state__icon">📖</div>
+          <p class="zine-state__msg">아직 작성된 글이 없습니다.<br>곧 상상문화의 이야기로 찾아올게요!</p>
+        </div>`;
+    }
+
+    async function fetchPosts(page = 1) {
+      const res = await fetch(
+        `${WP_BASE}/posts?per_page=${PER_PAGE}&page=${page}&_embed&status=publish`,
+        { cache: 'no-store' }
+      );
+      if (!res.ok) throw new Error('fetch failed');
+      totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1', 10);
+      return res.json();
+    }
+
+    async function loadPosts() {
+      try {
+        const posts = await fetchPosts(1);
+        const grid = document.getElementById('postGrid');
+
+        if (!posts || posts.length === 0) {
+          showEmpty();
+          return;
+        }
+
+        grid.innerHTML = posts.map(buildCard).join('');
+
+        if (totalPages > 1) {
+          document.getElementById('loadMoreWrap').style.display = 'block';
+        }
+      } catch(e) {
+        showError();
+      }
+    }
+
+    async function loadMore() {
+      const btn = document.getElementById('loadMoreBtn');
+      btn.disabled = true;
+      btn.textContent = '불러오는 중…';
+      currentPage++;
+
+      try {
+        const posts = await fetchPosts(currentPage);
+        const grid = document.getElementById('postGrid');
+        grid.insertAdjacentHTML('beforeend', posts.map(buildCard).join(''));
+
+        if (currentPage >= totalPages) {
+          document.getElementById('loadMoreWrap').style.display = 'none';
+        } else {
+          btn.disabled = false;
+          btn.textContent = '더 보기 ↓';
+        }
+      } catch(e) {
+        btn.disabled = false;
+        btn.textContent = '더 보기 ↓';
+      }
+    }
+
+    loadPosts();
+  </script>
 </body>
 </html>
