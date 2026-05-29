@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <script>window.location.replace("sangsang-story.html");</script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>예정된 공연 모두 보기 — SangSang Culture</title>
@@ -137,7 +136,7 @@
         <li><a href="sangsang-madang.html" class="active">상상동행마당</a></li>
         <li><a href="sangsang-zine.html">상상ZINE</a></li>
         <li><a href="https://smartstore.naver.com/sangsangbook" target="_blank">상상서가</a></li>
-        <li><a href="#">상상STORY</a></li>
+        <li><a href="sangsang-story.html">상상STORY</a></li>
       </ul>
     </nav>
     <div class="navbar__auth">
@@ -203,24 +202,61 @@
   </footer>
 
   <script>
+    // ── WordPress에서 예정공연 자동 로드 ──────────────────────────
+    const WP_API_BASE = 'http://sangsang153.com/wp-json/wp/v2';
+    const CATEGORY_SLUG = 'upcoming-concert';
     const ITEMS_PER_PAGE = 8;
 
-    // 샘플 데이터 (날짜 내림차순 기준)
-    const concerts = [
-      { name: '상상동행 겨울 콘서트',   date: '2026.12.20', img: 'assets/concert-poster.png' },
-      { name: '상상동행 가을 콘서트',   date: '2026.10.10', img: 'assets/concert-poster.png' },
-      { name: '상상동행 여름 콘서트',   date: '2026.08.22', img: 'assets/concert-poster.png' },
-      { name: '상상동행 봄 콘서트',     date: '2026.06.14', img: 'assets/concert-poster.png' },
-      { name: '앙상블 뉴송 정기 공연',  date: '2026.05.30', img: 'assets/concert-poster.png' },
-      { name: '상상문화 봄날 콘서트',   date: '2026.04.12', img: 'assets/concert-poster.png' },
-      { name: '신년 찬양 공연',         date: '2026.03.01', img: 'assets/concert-poster.png' },
-      { name: '상상동행 신춘 콘서트',   date: '2026.02.14', img: 'assets/concert-poster.png' },
-      { name: '찬양 앙상블 초청 공연',  date: '2026.01.25', img: 'assets/concert-poster.png' },
-      { name: '상상문화 기획 공연',     date: '2026.01.10', img: 'assets/concert-poster.png' },
-    ];
-
+    let concerts = [];
     let currentSort = 'newest';
     let currentPage = 1;
+
+    function escapeHtml(s) {
+      return (s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+    function stripHtml(h) {
+      const t = document.createElement('div'); t.innerHTML = h;
+      return (t.textContent || t.innerText || '').trim();
+    }
+
+    async function loadFromWordPress() {
+      try {
+        const catRes = await fetch(`${WP_API_BASE}/categories?slug=${CATEGORY_SLUG}`);
+        const cats = await catRes.json();
+        if (!cats || cats.length === 0) { showEmpty(); return; }
+        const catId = cats[0].id;
+
+        const postsRes = await fetch(`${WP_API_BASE}/posts?categories=${catId}&per_page=100&_embed&status=publish`);
+        const posts = await postsRes.json();
+        if (!posts || posts.length === 0) { showEmpty(); return; }
+
+        concerts = posts.map(p => {
+          let img = 'assets/concert-poster.png';
+          try { img = p._embedded['wp:featuredmedia'][0].source_url || img; } catch(e) {}
+          const excerpt = stripHtml(p.excerpt?.rendered || '');
+          const [venue = '', dateStr = ''] = excerpt.split('|').map(s => s.trim());
+          return {
+            name: p.title?.rendered || '',
+            date: dateStr || p.date.slice(0, 10).replace(/-/g, '.'),
+            img,
+            link: p.link || '#',
+          };
+        });
+        render();
+      } catch (e) {
+        showEmpty();
+      }
+    }
+
+    function showEmpty() {
+      document.getElementById('posterGrid').innerHTML =
+        `<div style="grid-column:1/-1;text-align:center;padding:80px 20px;color:#999;">
+          <div style="font-size:48px;margin-bottom:12px;">🎭</div>
+          <p style="font-size:18px;font-weight:500;">아직 예정된 공연이 없어요</p>
+          <p style="font-size:14px;margin-top:8px;color:#bbb;">곧 새로운 공연 소식으로 찾아올게요!</p>
+        </div>`;
+      document.getElementById('pagination').innerHTML = '';
+    }
 
     function sortBy(type) {
       currentSort = type;
@@ -240,24 +276,25 @@
 
     function render() {
       const sorted = getSorted();
+      if (sorted.length === 0) { showEmpty(); return; }
+
       const totalPages = Math.ceil(sorted.length / ITEMS_PER_PAGE);
       const start = (currentPage - 1) * ITEMS_PER_PAGE;
       const page = sorted.slice(start, start + ITEMS_PER_PAGE);
 
-      // Grid
       const grid = document.getElementById('posterGrid');
       grid.innerHTML = page.map(c => `
-        <div class="poster-card">
+        <a class="poster-card" href="${c.link}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:block;">
           <div class="poster-card__img-wrap">
-            <img class="poster-card__img" src="${c.img}" alt="${c.name}" />
+            <img class="poster-card__img" src="${c.img}" alt="${escapeHtml(c.name)}" loading="lazy" />
           </div>
-          <p class="poster-card__name">${c.name}</p>
-          <p class="poster-card__date">${c.date}</p>
-        </div>
+          <p class="poster-card__name">${escapeHtml(c.name)}</p>
+          <p class="poster-card__date">${escapeHtml(c.date)}</p>
+        </a>
       `).join('');
 
-      // Pagination
       const pg = document.getElementById('pagination');
+      if (totalPages <= 1) { pg.innerHTML = ''; return; }
       let html = `<button class="page-btn arrow" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled style="opacity:0.3;cursor:default"' : ''}>&lt;</button>`;
       for (let i = 1; i <= totalPages; i++) {
         html += `<button class="page-btn ${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
@@ -274,7 +311,7 @@
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 
-    render();
+    loadFromWordPress();
   </script>
 
   <!-- ══ 모바일 오버레이 ══ -->
@@ -293,7 +330,7 @@
         <li><a href="about.html">회사 소개</a></li>
         <li><a href="sangsang-madang.html" class="active">상상동행마당</a></li>
         <li><a href="sangsang-zine.html">상상ZINE</a></li>
-        <li><a href="https://smartstore.naver.com/sangsangbook" target="_blank">상상서가</a></li>
+        <li><a href="sangsang-books.html">상상서가</a></li>
         <li><a href="sangsang-story.html">상상STORY</a></li>
     </ul>
     <div class="mobile-nav__auth">
