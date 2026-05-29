@@ -39,25 +39,19 @@
     .navbar__auth a { color: var(--color-nav-text); text-decoration: none; transition: color 0.2s; }
     .navbar__auth a:hover { color: var(--color-green); }
 
-    /* ── Banner ── */
-    .page-banner {
-      width: 100%; height: 380px; display: flex; flex-direction: row;
-      overflow: hidden; background: #e0efff;
+    /* ── Banner (상상동행마당 swiper 스타일) ── */
+    .page-banner { position: relative; width: 100%; height: 380px; overflow: hidden; }
+    .page-banner__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .page-banner__overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.42); }
+    .page-banner__content {
+      position: relative; z-index: 2; height: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 18px; text-align: center; color: #fff; padding: 0 20px;
     }
-    .page-banner__left {
-      flex: 0 0 60%; padding: 77px 0 0 87px;
-      display: flex; flex-direction: column; gap: 22px;
-    }
-    .page-banner__tag {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 117px; height: 40px; background: #343434; border-radius: 8px;
-      font-family: var(--font-main); font-weight: 700; font-size: 21px; color: #fff; flex-shrink: 0;
-    }
-    .page-banner__headline { font-family: var(--font-main); font-weight: 700; font-size: 32px; color: #343434; line-height: 50px; }
-    .page-banner__sub { font-family: var(--font-main); font-weight: 700; font-size: 24px; color: #9fa0a0; line-height: 1.6; }
-    .page-banner__right { flex: 1; position: relative; overflow: hidden; }
-    .page-banner__img-blur { position: absolute; top: -49px; left: -36px; width: calc(100% + 36px); height: calc(100% + 98px); object-fit: cover; opacity: 0.2; filter: blur(2px); pointer-events: none; }
-    .page-banner__img-clear { position: absolute; top: -49px; left: 36px; width: calc(100% - 36px); height: calc(100% + 98px); object-fit: cover; pointer-events: none; }
+    .page-banner__logo { width: 200px; object-fit: contain; filter: brightness(0) invert(1); }
+    .page-banner__title { font-family: var(--font-main); font-weight: 800; font-size: 48px; line-height: 1.15; color: #fff; }
+    .page-banner__sub { font-family: var(--font-main); font-weight: 500; font-size: 20px; color: rgba(255,255,255,0.88); }
+    @media (max-width: 768px) { .page-banner { height: 280px; } .page-banner__title { font-size: 32px; } .page-banner__sub { font-size: 16px; } .page-banner__logo { width: 140px; } }
 
     /* ── List Section ── */
     .list-section { padding: 60px 80px 80px; }
@@ -150,17 +144,15 @@
   </header>
 
   <!-- ══ Banner ══ -->
-  <div class="page-banner">
-    <div class="page-banner__left">
-      <span class="page-banner__tag">예정 공연</span>
-      <p class="page-banner__headline">예수 그리스도의 복음을 전하고자<br>결성한 찬양 앙상블</p>
-      <p class="page-banner__sub">앙상블 뉴송</p>
+  <section class="page-banner">
+    <img class="page-banner__bg" src="assets/madang-banner-bg.png" alt="" />
+    <div class="page-banner__overlay"></div>
+    <div class="page-banner__content">
+      <img class="page-banner__logo" src="assets/sangsang-stage-logo.svg" alt="SangSang Stage" />
+      <h1 class="page-banner__title">예정된 공연</h1>
+      <p class="page-banner__sub">상상문화와 함께할 다가오는 무대를 만나보세요</p>
     </div>
-    <div class="page-banner__right">
-      <img class="page-banner__img-blur" src="assets/banner1-img.png" alt="" />
-      <img class="page-banner__img-clear" src="assets/banner1-img.png" alt="예정 공연" />
-    </div>
-  </div>
+  </section>
 
   <!-- ══ 목록 ══ -->
   <section class="list-section">
