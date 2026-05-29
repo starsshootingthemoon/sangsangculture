@@ -35,9 +35,23 @@
     .navbar__auth a { color: var(--color-nav-text); text-decoration: none; transition: color 0.2s; }
     .navbar__auth a:hover { color: var(--color-green); }
 
+    /* ── Page Banner (상상동행마당 스타일) ── */
+    .page-banner { position: relative; width: 100%; height: 380px; overflow: hidden; }
+    .page-banner__bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    .page-banner__overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.48); }
+    .page-banner__content {
+      position: relative; z-index: 2; height: 100%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 18px; text-align: center; color: #fff; padding: 0 20px;
+    }
+    .page-banner__logo { width: 220px; object-fit: contain; filter: brightness(0) invert(1); }
+    .page-banner__title { font-family: var(--font-main); font-weight: 800; font-size: 48px; line-height: 1.15; color: #fff; }
+    .page-banner__sub { font-family: var(--font-main); font-weight: 500; font-size: 20px; color: rgba(255,255,255,0.88); }
+    @media (max-width: 768px) { .page-banner { height: 280px; } .page-banner__title { font-size: 32px; } .page-banner__sub { font-size: 16px; } .page-banner__logo { width: 160px; } }
+
     /* ── Zine Section ── */
     .zine-section { flex: 1; padding: 60px 60px 80px; }
-    .zine-section__header { margin-bottom: 48px; }
+    .zine-section__header { margin-bottom: 48px; display: none; }
     .zine-section__title { font-family: var(--font-display); font-size: 42px; color: var(--color-green); margin-bottom: 10px; }
     .zine-section__subtitle { font-size: 16px; color: var(--color-nav-text); font-weight: 400; }
 
@@ -121,6 +135,17 @@
       <span></span><span></span><span></span>
     </button>
   </header>
+
+  <!-- ══ Banner ══ -->
+  <section class="page-banner">
+    <img class="page-banner__bg" src="assets/zine-hero-bg.png" alt="" />
+    <div class="page-banner__overlay"></div>
+    <div class="page-banner__content">
+      <img class="page-banner__logo" src="assets/sangsang-zine-logo.svg" alt="상상ZINE" />
+      <h1 class="page-banner__title">상상ZINE</h1>
+      <p class="page-banner__sub">상상문화의 매거진과 이야기를 전합니다</p>
+    </div>
+  </section>
 
   <!-- ══ Zine Section ══ -->
   <main class="zine-section">
