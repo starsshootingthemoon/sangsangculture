@@ -261,6 +261,7 @@
       color: #222;
       position: relative;
       padding-bottom: 14px;
+      margin-bottom: 32px;
     }
 
     .section__title::after {
@@ -646,80 +647,12 @@
       <h2 class="section__title">예정된 공연</h2>
       <a href="madang-concerts-upcoming.html" class="section__more">더보기 &rsaquo;</a>
     </div>
-    <div class="poster-grid">
-
-      <div class="poster-card">
-        <img class="poster-card__img" src="assets/concert-poster.png" alt="공연 포스터 1" />
-        <div class="poster-card__overlay">
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">공연명</span>
-            <span class="poster-card__value">상상동행 봄 콘서트</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">장소</span>
-            <span class="poster-card__value">성수 베컴빌딩 홀</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">일시</span>
-            <span class="poster-card__value">2026. 06. 14 (토) 17:00</span>
-          </div>
-        </div>
+    <div class="poster-grid" id="upcomingGrid">
+      <div class="empty-state" style="grid-column:1/-1;text-align:center;padding:80px 20px;color:#999;">
+        <div style="font-size:48px;margin-bottom:12px;">🎭</div>
+        <p style="font-size:18px;font-weight:500;">아직 진행중인 공연이 없어요</p>
+        <p style="font-size:14px;margin-top:8px;color:#bbb;">곧 새로운 공연 소식으로 찾아올게요!</p>
       </div>
-
-      <div class="poster-card">
-        <img class="poster-card__img" src="assets/concert-poster.png" alt="공연 포스터 2" />
-        <div class="poster-card__overlay">
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">공연명</span>
-            <span class="poster-card__value">상상동행 여름 콘서트</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">장소</span>
-            <span class="poster-card__value">성수 베컴빌딩 홀</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">일시</span>
-            <span class="poster-card__value">2026. 08. 22 (토) 17:00</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="poster-card">
-        <img class="poster-card__img" src="assets/concert-poster.png" alt="공연 포스터 3" />
-        <div class="poster-card__overlay">
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">공연명</span>
-            <span class="poster-card__value">상상동행 가을 콘서트</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">장소</span>
-            <span class="poster-card__value">성수 베컴빌딩 홀</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">일시</span>
-            <span class="poster-card__value">2026. 10. 10 (토) 17:00</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="poster-card">
-        <img class="poster-card__img" src="assets/concert-poster.png" alt="공연 포스터 4" />
-        <div class="poster-card__overlay">
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">공연명</span>
-            <span class="poster-card__value">상상동행 겨울 콘서트</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">장소</span>
-            <span class="poster-card__value">성수 베컴빌딩 홀</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">일시</span>
-            <span class="poster-card__value">2026. 12. 20 (토) 17:00</span>
-          </div>
-        </div>
-      </div>
-
     </div>
   </section>
 
@@ -731,151 +664,29 @@
       <h2 class="section__title">지난 공연</h2>
       <a href="madang-concerts-past.html" class="section__more">더보기 &rsaquo;</a>
     </div>
-    <div class="poster-grid">
-
-      <div class="poster-card">
-        <img class="poster-card__img" src="assets/concert-poster-img.png" alt="지난 공연 포스터 1" />
-        <div class="poster-card__overlay">
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">공연명</span>
-            <span class="poster-card__value">2025 상상동행 겨울 콘서트</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">장소</span>
-            <span class="poster-card__value">성수 베컴빌딩 홀</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">일시</span>
-            <span class="poster-card__value">2025. 12. 21 (토) 17:00</span>
-          </div>
-        </div>
+    <div class="poster-grid" id="pastGrid">
+      <div class="empty-state" style="grid-column:1/-1;text-align:center;padding:80px 20px;color:#999;">
+        <div style="font-size:48px;margin-bottom:12px;">📭</div>
+        <p style="font-size:18px;font-weight:500;">아직 지난 공연 기록이 없어요</p>
       </div>
-
-      <div class="poster-card">
-        <img class="poster-card__img" src="assets/concert-poster-img.png" alt="지난 공연 포스터 2" />
-        <div class="poster-card__overlay">
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">공연명</span>
-            <span class="poster-card__value">2025 상상동행 가을 콘서트</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">장소</span>
-            <span class="poster-card__value">성수 베컴빌딩 홀</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">일시</span>
-            <span class="poster-card__value">2025. 10. 18 (토) 17:00</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="poster-card">
-        <img class="poster-card__img" src="assets/concert-poster-img.png" alt="지난 공연 포스터 3" />
-        <div class="poster-card__overlay">
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">공연명</span>
-            <span class="poster-card__value">2025 상상동행 여름 콘서트</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">장소</span>
-            <span class="poster-card__value">성수 베컴빌딩 홀</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">일시</span>
-            <span class="poster-card__value">2025. 08. 23 (토) 17:00</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="poster-card">
-        <img class="poster-card__img" src="assets/concert-poster-img.png" alt="지난 공연 포스터 4" />
-        <div class="poster-card__overlay">
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">공연명</span>
-            <span class="poster-card__value">2025 상상동행 봄 콘서트</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">장소</span>
-            <span class="poster-card__value">성수 베컴빌딩 홀</span>
-          </div>
-          <div class="poster-card__info-row">
-            <span class="poster-card__label">일시</span>
-            <span class="poster-card__value">2025. 06. 14 (토) 17:00</span>
-          </div>
-        </div>
-      </div>
-
     </div>
   </section>
 
   <div class="section-divider"></div>
 
-  <!-- ══ 지난 공연 다시 보기 ══ -->
+  <!-- ══ 최신 영상 ══ -->
   <section class="section">
-    <h2 class="section__title">지난 공연 다시 보기</h2>
-    <div class="replay-grid">
-
-      <div class="replay-card">
-        <img class="replay-card__img" src="assets/replay-thumb.png" alt="다시보기 1" />
-        <div class="replay-card__play">
-          <div class="replay-card__play-icon">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-        </div>
-        <div class="replay-card__title">2025 상상동행 겨울 콘서트 풀영상</div>
-      </div>
-
-      <div class="replay-card">
-        <img class="replay-card__img" src="assets/replay-thumb.png" alt="다시보기 2" />
-        <div class="replay-card__play">
-          <div class="replay-card__play-icon">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-        </div>
-        <div class="replay-card__title">2025 상상동행 가을 콘서트 풀영상</div>
-      </div>
-
-      <div class="replay-card">
-        <img class="replay-card__img" src="assets/replay-thumb.png" alt="다시보기 3" />
-        <div class="replay-card__play">
-          <div class="replay-card__play-icon">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-        </div>
-        <div class="replay-card__title">2025 상상동행 여름 콘서트 풀영상</div>
-      </div>
-
-      <div class="replay-card">
-        <img class="replay-card__img" src="assets/replay-thumb.png" alt="다시보기 4" />
-        <div class="replay-card__play">
-          <div class="replay-card__play-icon">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-        </div>
-        <div class="replay-card__title">2025 상상동행 봄 콘서트 풀영상</div>
-      </div>
-
-      <div class="replay-card">
-        <img class="replay-card__img" src="assets/replay-thumb.png" alt="다시보기 5" />
-        <div class="replay-card__play">
-          <div class="replay-card__play-icon">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-        </div>
-        <div class="replay-card__title">2024 상상동행 겨울 콘서트 풀영상</div>
-      </div>
-
-      <div class="replay-card">
-        <img class="replay-card__img" src="assets/replay-thumb.png" alt="다시보기 6" />
-        <div class="replay-card__play">
-          <div class="replay-card__play-icon">
-            <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-          </div>
-        </div>
-        <div class="replay-card__title">2024 상상동행 가을 콘서트 풀영상</div>
-      </div>
-
+    <h2 class="section__title">최신 영상</h2>
+    <div class="replay-grid" id="ytGrid">
+      <!-- 로딩 스켈레톤 -->
+      <div class="replay-card" style="background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;"></div>
+      <div class="replay-card" style="background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;"></div>
+      <div class="replay-card" style="background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;"></div>
+      <div class="replay-card" style="background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;"></div>
+      <div class="replay-card" style="background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;"></div>
+      <div class="replay-card" style="background:linear-gradient(90deg,#f0f0f0 25%,#e0e0e0 50%,#f0f0f0 75%);background-size:200% 100%;animation:shimmer 1.4s infinite;"></div>
     </div>
+    <style>@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}</style>
 
     <div class="youtube-wrap">
       <a class="youtube-btn"
@@ -982,5 +793,138 @@
     </div>
   </nav>
   <script src="assets/mobile.js"></script>
+  <script>
+    // ── YouTube 최신 영상 자동 로드 ──────────────────────────────
+    const YT_CHANNEL_ID = 'UC8QZ6RVWBHETM5K481FFWtA'; // 상상동행마당
+    const YT_FEED_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${YT_CHANNEL_ID}`;
+    const RSS2JSON_URL = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(YT_FEED_URL)}`;
+    const MAX_VIDEOS = 6;
+
+    function escapeHtml(str) {
+      return (str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function extractVideoId(link) {
+      const m = link.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+      return m ? m[1] : null;
+    }
+
+    function buildYtCard(item) {
+      const videoId = extractVideoId(item.link);
+      if (!videoId) return '';
+      const title = escapeHtml(item.title);
+      const thumb = `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`;
+      const link = `https://www.youtube.com/watch?v=${videoId}`;
+      return `
+        <a class="replay-card" href="${link}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:block;">
+          <img class="replay-card__img" src="${thumb}" alt="${title}" loading="lazy" />
+          <div class="replay-card__play">
+            <div class="replay-card__play-icon">
+              <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+          </div>
+          <div class="replay-card__title">${title}</div>
+        </a>`;
+    }
+
+    async function loadYouTubeVideos() {
+      const grid = document.getElementById('ytGrid');
+      try {
+        const res = await fetch(RSS2JSON_URL, { cache: 'no-store' });
+        const data = await res.json();
+        if (data.status !== 'ok' || !data.items || data.items.length === 0) {
+          throw new Error('no items');
+        }
+        const cards = data.items.slice(0, MAX_VIDEOS).map(buildYtCard).join('');
+        grid.innerHTML = cards;
+      } catch (e) {
+        grid.innerHTML = `
+          <div style="grid-column:1/-1;text-align:center;padding:40px;color:#888;">
+            영상을 불러오는 중 오류가 발생했습니다.<br>
+            <a href="https://www.youtube.com/@%EC%83%81%EC%83%81%EB%8F%99%ED%96%89%EB%A7%88%EB%8B%B9" target="_blank" rel="noopener" style="color:var(--color-green);text-decoration:underline;">
+              유튜브 채널에서 바로 보기 →
+            </a>
+          </div>`;
+      }
+    }
+    loadYouTubeVideos();
+
+    // ── WordPress 공연 자동 로드 ───────────────────────────────
+    // WordPress 글 작성 시 카테고리:
+    //   "예정공연" (slug: upcoming-concert) → 예정된 공연 섹션
+    //   "지난공연" (slug: past-concert) → 지난 공연 섹션
+    // 글 형식:
+    //   - 제목: 공연명
+    //   - 대표 이미지: 공연 포스터
+    //   - 발췌(요약): "장소|일시" 형식 (예: "성수 베컴빌딩 홀|2026.06.14 (토) 17:00")
+    const WP_API_BASE = 'http://sangsang153.com/wp-json/wp/v2';
+
+    function escapeHtml2(str) {
+      return (str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+    }
+
+    function stripHtml2(html) {
+      const tmp = document.createElement('div');
+      tmp.innerHTML = html;
+      return (tmp.textContent || tmp.innerText || '').trim();
+    }
+
+    function getThumbUrl(post) {
+      try {
+        const media = post._embedded?.['wp:featuredmedia'];
+        if (media && media[0] && media[0].source_url) return media[0].source_url;
+      } catch (e) {}
+      return 'assets/concert-poster.png';
+    }
+
+    function buildPosterCard(post) {
+      const title = escapeHtml2(post.title?.rendered || '');
+      const thumb = getThumbUrl(post);
+      const excerpt = stripHtml2(post.excerpt?.rendered || '');
+      const [venue = '', dateStr = ''] = excerpt.split('|').map(s => s.trim());
+      const link = post.link || '#';
+      return `
+        <a class="poster-card" href="${link}" target="_blank" rel="noopener" style="text-decoration:none;color:inherit;display:block;">
+          <img class="poster-card__img" src="${thumb}" alt="${title}" loading="lazy" />
+          <div class="poster-card__overlay">
+            <div class="poster-card__info-row">
+              <span class="poster-card__label">공연명</span>
+              <span class="poster-card__value">${title}</span>
+            </div>
+            ${venue ? `<div class="poster-card__info-row">
+              <span class="poster-card__label">장소</span>
+              <span class="poster-card__value">${escapeHtml2(venue)}</span>
+            </div>` : ''}
+            ${dateStr ? `<div class="poster-card__info-row">
+              <span class="poster-card__label">일시</span>
+              <span class="poster-card__value">${escapeHtml2(dateStr)}</span>
+            </div>` : ''}
+          </div>
+        </a>`;
+    }
+
+    async function loadConcerts(categorySlug, gridId) {
+      try {
+        // 카테고리 ID 조회
+        const catRes = await fetch(`${WP_API_BASE}/categories?slug=${categorySlug}`);
+        const cats = await catRes.json();
+        if (!cats || cats.length === 0) return; // 카테고리 없으면 빈 상태 유지
+        const catId = cats[0].id;
+
+        // 해당 카테고리의 글 조회
+        const postsRes = await fetch(`${WP_API_BASE}/posts?categories=${catId}&per_page=4&_embed&status=publish`);
+        const posts = await postsRes.json();
+        if (!posts || posts.length === 0) return;
+
+        const grid = document.getElementById(gridId);
+        grid.innerHTML = posts.map(buildPosterCard).join('');
+      } catch (e) {
+        // 실패 시 빈 상태 유지
+      }
+    }
+
+    loadConcerts('upcoming-concert', 'upcomingGrid');
+    loadConcerts('past-concert', 'pastGrid');
+  </script>
 </body>
 </html>
