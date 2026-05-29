@@ -694,6 +694,7 @@
     })();
 
     /* ── Swiper: WordPress "madang-banner" 카테고리 동적 로드 ── */
+    const WP_API_BASE = 'http://sangsang153.com/wp-json/wp/v2';
     const MADANG_BANNER_CATEGORY = 'madang-banner';
     let current = 0;
     let total = 0;
@@ -896,7 +897,7 @@
     //   - 제목: 공연명
     //   - 대표 이미지: 공연 포스터
     //   - 발췌(요약): "장소|일시" 형식 (예: "성수 베컴빌딩 홀|2026.06.14 (토) 17:00")
-    const WP_API_BASE = 'http://sangsang153.com/wp-json/wp/v2';
+    // WP_API_BASE는 위 스크립트에서 이미 선언됨
 
     function escapeHtml2(str) {
       return (str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
