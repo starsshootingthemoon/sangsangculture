@@ -194,7 +194,7 @@
 
   <script>
     // ── WordPress에서 지난공연 자동 로드 ──────────────────────────
-    const WP_API_BASE = 'http://sangsang153.com/wp-json/wp/v2';
+    const WP_API_BASE = window.location.origin + '/wp-json/wp/v2';
     const REST_BASE = 'past-concerts';
     const ITEMS_PER_PAGE = 8;
 

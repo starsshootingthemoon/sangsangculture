@@ -321,7 +321,7 @@
   <script>
     // ── WordPress 글 상세 로딩 ─────────────────────────────────
     // URL 형식: zine-magazine.html?id=POST_ID
-    const WP_API_BASE = 'http://sangsang153.com/wp-json/wp/v2';
+    const WP_API_BASE = window.location.origin + '/wp-json/wp/v2';
 
     function getQueryParam(name) {
       const m = new URLSearchParams(window.location.search).get(name);

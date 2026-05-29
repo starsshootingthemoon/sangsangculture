@@ -614,7 +614,7 @@
 
   <script>
     /* ── Swiper: WordPress "madang-banner" 카테고리 동적 로드 ── */
-    const WP_API_BASE = 'http://sangsang153.com/wp-json/wp/v2';
+    const WP_API_BASE = window.location.origin + '/wp-json/wp/v2';
     const MADANG_BANNER_CATEGORY = 'madang-banner';
     let current = 0;
     let total = 0;

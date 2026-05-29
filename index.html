@@ -629,7 +629,7 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
   <script>
     // ── WordPress에서 hero-banner 카테고리 글 가져와서 swiper 슬라이드로 변환 ──
-    const WP_API_BASE = 'http://sangsang153.com/wp-json/wp/v2';
+    const WP_API_BASE = window.location.origin + '/wp-json/wp/v2';
     const HERO_CATEGORY_SLUG = 'hero-banner';
 
     // 배경 그라데이션 팔레트 (순환)
@@ -712,9 +712,10 @@
     }
 
     function initHeroSwiper() {
+      const slideCount = document.querySelectorAll('#heroSwiperWrapper .swiper-slide').length;
       new Swiper('.hero-swiper', {
-        loop: true,
-        autoplay: { delay: 5000, disableOnInteraction: false },
+        loop: slideCount >= 3,                       // 3장 이상일 때만 loop 활성화
+        autoplay: slideCount > 1 ? { delay: 5000, disableOnInteraction: false } : false,
         pagination: { el: '.swiper-pagination', clickable: true },
         navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
         speed: 600,
