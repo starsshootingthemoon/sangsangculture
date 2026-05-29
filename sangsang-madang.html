@@ -681,15 +681,9 @@
       const track = document.getElementById('swiperTrack');
       const dotsEl = document.getElementById('swiperDots');
       try {
-        const catRes = await fetch(`${WP_API_BASE}/categories?slug=${MADANG_BANNER_CATEGORY}`);
-        const cats = await catRes.json();
-        if (!cats || cats.length === 0) throw new Error('no category');
-        const catId = cats[0].id;
-
-        const postsRes = await fetch(`${WP_API_BASE}/posts?categories=${catId}&per_page=10&_embed&status=publish&orderby=date&order=asc`);
-        const posts = await postsRes.json();
+        const res = await fetch(`${WP_API_BASE}/madang-banners?per_page=10&_embed&orderby=menu_order&order=asc`);
+        const posts = await res.json();
         if (!posts || posts.length === 0) throw new Error('no posts');
-
         track.innerHTML = posts.map(buildMadangSlide).join('');
         total = posts.length;
       } catch (e) {
@@ -847,28 +841,17 @@
         </a>`;
     }
 
-    async function loadConcerts(categorySlug, gridId) {
+    async function loadConcerts(restBase, gridId) {
       try {
-        // 카테고리 ID 조회
-        const catRes = await fetch(`${WP_API_BASE}/categories?slug=${categorySlug}`);
-        const cats = await catRes.json();
-        if (!cats || cats.length === 0) return; // 카테고리 없으면 빈 상태 유지
-        const catId = cats[0].id;
-
-        // 해당 카테고리의 글 조회
-        const postsRes = await fetch(`${WP_API_BASE}/posts?categories=${catId}&per_page=4&_embed&status=publish`);
-        const posts = await postsRes.json();
+        const res = await fetch(`${WP_API_BASE}/${restBase}?per_page=4&_embed`);
+        const posts = await res.json();
         if (!posts || posts.length === 0) return;
-
-        const grid = document.getElementById(gridId);
-        grid.innerHTML = posts.map(buildPosterCard).join('');
-      } catch (e) {
-        // 실패 시 빈 상태 유지
-      }
+        document.getElementById(gridId).innerHTML = posts.map(buildPosterCard).join('');
+      } catch (e) {}
     }
 
-    loadConcerts('upcoming-concert', 'upcomingGrid');
-    loadConcerts('past-concert', 'pastGrid');
+    loadConcerts('upcoming-concerts', 'upcomingGrid');
+    loadConcerts('past-concerts', 'pastGrid');
   </script>
 </body>
 </html>

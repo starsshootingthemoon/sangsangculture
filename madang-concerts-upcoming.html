@@ -196,7 +196,7 @@
   <script>
     // ── WordPress에서 예정공연 자동 로드 ──────────────────────────
     const WP_API_BASE = 'http://sangsang153.com/wp-json/wp/v2';
-    const CATEGORY_SLUG = 'upcoming-concert';
+    const REST_BASE = 'upcoming-concerts';
     const ITEMS_PER_PAGE = 8;
 
     let concerts = [];
@@ -213,12 +213,7 @@
 
     async function loadFromWordPress() {
       try {
-        const catRes = await fetch(`${WP_API_BASE}/categories?slug=${CATEGORY_SLUG}`);
-        const cats = await catRes.json();
-        if (!cats || cats.length === 0) { showEmpty(); return; }
-        const catId = cats[0].id;
-
-        const postsRes = await fetch(`${WP_API_BASE}/posts?categories=${catId}&per_page=100&_embed&status=publish`);
+        const postsRes = await fetch(`${WP_API_BASE}/${REST_BASE}?per_page=100&_embed`);
         const posts = await postsRes.json();
         if (!posts || posts.length === 0) { showEmpty(); return; }
 

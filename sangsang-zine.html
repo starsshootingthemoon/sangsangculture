@@ -349,27 +349,10 @@
         </div>`;
     }
 
-    // 배너/공연 카테고리 글은 ZINE 목록에서 제외
-    const EXCLUDE_SLUGS = ['hero-banner', 'madang-banner', 'zine-banner', 'upcoming-concert', 'past-concert'];
-    let excludeIds = null;
-
-    async function getExcludeIds() {
-      if (excludeIds !== null) return excludeIds;
-      try {
-        const res = await fetch(`${WP_BASE}/categories?slug=${EXCLUDE_SLUGS.join(',')}&per_page=20`);
-        const cats = await res.json();
-        excludeIds = (cats || []).map(c => c.id);
-      } catch (e) {
-        excludeIds = [];
-      }
-      return excludeIds;
-    }
-
+    // 일반 글(매거진)만 표시. 배너/공연은 별도 커스텀 포스트 타입이라 자동 분리됨
     async function fetchPosts(page = 1) {
-      const ex = await getExcludeIds();
-      const exParam = ex.length > 0 ? `&categories_exclude=${ex.join(',')}` : '';
       const res = await fetch(
-        `${WP_BASE}/posts?per_page=${PER_PAGE}&page=${page}&_embed&status=publish${exParam}`,
+        `${WP_BASE}/posts?per_page=${PER_PAGE}&page=${page}&_embed&status=publish`,
         { cache: 'no-store' }
       );
       if (!res.ok) throw new Error('fetch failed');
@@ -448,15 +431,9 @@
     async function loadZineBanners() {
       const track = document.getElementById('pbTrack');
       try {
-        const catRes = await fetch(`${WP_BASE}/categories?slug=${ZINE_BANNER_CATEGORY}`);
-        const cats = await catRes.json();
-        if (!cats || cats.length === 0) throw new Error('no category');
-        const catId = cats[0].id;
-
-        const postsRes = await fetch(`${WP_BASE}/posts?categories=${catId}&per_page=10&_embed&status=publish&orderby=date&order=asc`);
-        const posts = await postsRes.json();
+        const res = await fetch(`${WP_BASE}/zine-banners?per_page=10&_embed&orderby=menu_order&order=asc`);
+        const posts = await res.json();
         if (!posts || posts.length === 0) throw new Error('no posts');
-
         track.innerHTML = posts.map(buildZineBannerSlide).join('');
         pbTotal = posts.length;
       } catch (e) {
