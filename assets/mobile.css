@@ -85,8 +85,14 @@
 .mobile-nav__menu li a.active { color: #95B658; border-left-color: #95B658; }
 
 .mobile-nav__auth {
-  display: flex; gap: 0;
+  display: flex; flex-wrap: wrap; gap: 0;
   border-top: 1px solid #eee;
+}
+.mobile-nav__auth span {
+  width: 100%;
+  text-align: center;
+  padding: 14px 0 0;
+  font-family: 'Pretendard', 'Apple SD Gothic Neo', sans-serif;
 }
 .mobile-nav__auth a {
   flex: 1; text-align: center; padding: 18px 0;
