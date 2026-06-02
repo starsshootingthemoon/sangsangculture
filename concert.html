@@ -145,11 +145,9 @@
           <p class="concert__title-en" id="titleEn" style="display:none;"></p>
           <div class="concert__meta" id="metaGrid"></div>
           <div class="concert__action-row">
-            <a class="concert__btn-book" id="ctaBtn" href="#" target="_blank" rel="noopener">예매 신청하기</a>
+            <a class="concert__btn-book" id="ctaBtn" href="#" target="_blank" rel="noopener" style="display:none;">🎟 예매하기</a>
             <button class="concert__btn-like" id="likeBtn" onclick="toggleLike()" title="찜하기">🤍</button>
-          </div>
-          <div style="margin-top:8px; display:flex; gap:16px;">
-            <button id="bookmarkBtn" onclick="bookConcert()" style="background:none;border:none;font-size:14px;color:#95B658;cursor:pointer;font-weight:600;padding:0;">✅ 예매 완료로 저장</button>
+            <button class="concert__btn-like" id="bookmarkBtn" onclick="bookConcert()" title="예매저장" style="font-size:20px;">✅</button>
           </div>
         </div>
       </div>
@@ -299,13 +297,13 @@
             <div class="concert__meta-value">${escapeHtml(m.value)}</div>
           `).join('');
 
-        // CTA 버튼
+        // CTA 버튼 (예매 링크)
         const ctaBtn = document.getElementById('ctaBtn');
         if (meta.link) {
           ctaBtn.href = meta.link;
-          ctaBtn.textContent = type === 'past' ? '▶ 영상 보러가기' : '예매 신청하기';
+          ctaBtn.textContent = type === 'past' ? '▶ 영상 보러가기' : '🎟 예매하기';
+          ctaBtn.style.display = 'inline-flex';
         } else {
-          // 링크 없으면 버튼 숨김
           ctaBtn.style.display = 'none';
         }
 

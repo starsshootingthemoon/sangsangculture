@@ -519,6 +519,21 @@
       }
     }
 
+    // 로그인 상태면 이름/이메일 자동 입력
+    (function prefillComment() {
+      try {
+        const user = JSON.parse(localStorage.getItem('ss_user') || '{}');
+        if (user.name || user.username) {
+          document.getElementById('cmName').value = user.name || user.username;
+          document.getElementById('cmName').readOnly = true;
+        }
+        if (user.email) {
+          document.getElementById('cmEmail').value = user.email;
+          document.getElementById('cmEmail').readOnly = true;
+        }
+      } catch (e) {}
+    })();
+
     async function submitComment(e) {
       e.preventDefault();
       if (!currentPostId) return false;
