@@ -36,7 +36,7 @@ document.addEventListener('keydown', function(e) {
   const el = document.getElementById('footerPartners');
   if (!el) return;
   try {
-    const res = await fetch(window.location.origin + '/wp-json/wp/v2/partners?per_page=20&_fields=id,title,featured_image_url,link');
+    const res = await fetch(window.location.origin + '/wp-json/wp/v2/partners?per_page=20&_fields=id,title,featured_image_url,partner_link');
     if (!res.ok) return;
     const partners = await res.json();
     if (!partners.length) return;
