@@ -544,8 +544,16 @@
       const email = document.getElementById('cmEmail').value.trim();
       const content = document.getElementById('cmContent').value.trim();
 
-      if (!name || !email || !content) {
-        status.textContent = '모든 항목을 입력해주세요.';
+      // 로그인 체크
+      const ssUser = (() => { try { return JSON.parse(localStorage.getItem('ss_user') || '{}'); } catch { return {}; } })();
+      if (!ssUser.username) {
+        status.textContent = '댓글을 쓰려면 로그인이 필요합니다.';
+        status.className = 'comment-form__status error';
+        return false;
+      }
+
+      if (!content) {
+        status.textContent = '댓글 내용을 입력해주세요.';
         status.className = 'comment-form__status error';
         return false;
       }
@@ -555,24 +563,27 @@
       status.textContent = '';
       status.className = 'comment-form__status';
 
+      // 비밀번호 가져오기 (세션에 없으면 입력 요청)
+      const password = localStorage.getItem('ss_pw') || prompt('댓글 등록을 위해 비밀번호를 입력해주세요.');
+      if (!password) { btn.disabled = false; btn.textContent = '댓글 등록'; return false; }
+
       try {
-        const res = await fetch(`${WP_API_BASE}/comments`, {
+        const SANGSANG_API = window.location.origin + '/wp-json/sangsang/v1';
+        const res = await fetch(`${SANGSANG_API}/comment`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            post: currentPostId,
-            author_name: name,
-            author_email: email,
-            content: content,
+            username: ssUser.username,
+            password,
+            post_id: currentPostId,
+            content,
           }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data?.message || 'failed');
 
         // 성공
-        status.textContent = data.status === 'approved'
-          ? '✅ 댓글이 등록되었습니다.'
-          : '✅ 댓글이 등록되었습니다. (관리자 승인 후 표시됩니다)';
+        status.textContent = '✅ 댓글이 등록되었습니다.';
         status.className = 'comment-form__status success';
         document.getElementById('cmContent').value = '';
 

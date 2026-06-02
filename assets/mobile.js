@@ -72,5 +72,6 @@ document.addEventListener('keydown', function(e) {
 function logout(e) {
   e.preventDefault();
   localStorage.removeItem('ss_user');
+  localStorage.removeItem('ss_pw');
   window.location.href = 'index.html';
 }

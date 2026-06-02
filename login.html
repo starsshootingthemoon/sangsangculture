@@ -467,6 +467,7 @@
         }
 
         localStorage.setItem('ss_user', JSON.stringify({ username: data.user_login, email: data.user_email, name: data.display_name }));
+        localStorage.setItem('ss_pw', password);
         window.location.href = 'index.html';
 
       } catch (err) {
