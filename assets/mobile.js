@@ -93,8 +93,7 @@ document.addEventListener('keydown', function(e) {
     const mobileAuth = document.querySelector('.mobile-nav__auth');
     if (mobileAuth) {
       mobileAuth.innerHTML = `
-        <span style="font-size:15px; font-weight:700; color:#95B658;">${name}님!</span>
-        <div class="auth-divider"></div>
+        <span style="font-size:15px; font-weight:700; color:#95B658; width:100%; text-align:center; display:block; margin-bottom:8px;">${name}님, 안녕하세요!</span>
         <a href="mypage.html" style="${linkStyle}">마이페이지</a>
         <div class="auth-divider"></div>
         <a href="#" onclick="logout(event)" style="${linkStyle}">로그아웃</a>
