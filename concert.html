@@ -257,15 +257,11 @@
       const type = getParam('type') || 'upcoming'; // upcoming | past
       if (!id) { showError('잘못된 접근입니다.'); return; }
 
-      // 뒤로가기 링크
+      // 뒤로가기
       const backLink = document.getElementById('backLink');
-      if (type === 'past') {
-        backLink.href = 'madang-concerts-past.html';
-        backLink.textContent = '← 지난 공연 목록으로';
-      } else {
-        backLink.href = 'madang-concerts-upcoming.html';
-        backLink.textContent = '← 예정된 공연 목록으로';
-      }
+      backLink.href = '#';
+      backLink.textContent = '← 뒤로가기';
+      backLink.onclick = (e) => { e.preventDefault(); history.back(); };
 
       const restBase = type === 'past' ? 'past-concerts' : 'upcoming-concerts';
       try {
