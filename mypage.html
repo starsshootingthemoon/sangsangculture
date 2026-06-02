@@ -105,6 +105,70 @@
     }
     .logout-btn:hover { background: #e5e5e5; }
 
+    /* ───── 활동 섹션 ───── */
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-dark);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .activity-card {
+      background: #f9f9f9;
+      border-radius: 16px;
+      padding: 20px 24px;
+      margin-bottom: 20px;
+    }
+    .activity-list { display: flex; flex-direction: column; gap: 10px; }
+    .activity-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 12px;
+      background: #fff;
+      border-radius: 10px;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.15s;
+    }
+    .activity-item:hover { box-shadow: 0 2px 10px rgba(0,0,0,0.08); }
+    .activity-item__thumb {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      object-fit: cover;
+      background: #e8e8e8;
+      flex-shrink: 0;
+    }
+    .activity-item__thumb-placeholder {
+      width: 48px;
+      height: 48px;
+      border-radius: 8px;
+      background: #e8e8e8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .activity-item__title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--color-dark);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      flex: 1;
+    }
+    .activity-empty {
+      font-size: 14px;
+      color: #aaa;
+      text-align: center;
+      padding: 16px 0;
+    }
+
     /* ───── Footer ───── */
     .footer {
       width: 100%;
@@ -176,6 +240,31 @@
     </div>
 
     <button class="logout-btn" onclick="logout()">로그아웃</button>
+
+    <!-- 최근 본 공연 -->
+    <div class="activity-card" style="margin-top:32px;">
+      <div class="section-title">🎭 최근 본 공연</div>
+      <div class="activity-list" id="recentConcerts"><div class="activity-empty">아직 본 공연이 없어요</div></div>
+    </div>
+
+    <!-- 내가 찜한 공연 -->
+    <div class="activity-card">
+      <div class="section-title">❤️ 찜한 공연</div>
+      <div class="activity-list" id="likedConcerts"><div class="activity-empty">찜한 공연이 없어요</div></div>
+    </div>
+
+    <!-- 내가 예매한 공연 -->
+    <div class="activity-card">
+      <div class="section-title">✅ 예매한 공연</div>
+      <div class="activity-list" id="bookedConcerts"><div class="activity-empty">예매한 공연이 없어요</div></div>
+    </div>
+
+    <!-- 최근 본 ZINE -->
+    <div class="activity-card">
+      <div class="section-title">📖 최근 본 상상ZINE</div>
+      <div class="activity-list" id="recentZines"><div class="activity-empty">아직 본 글이 없어요</div></div>
+    </div>
+
   </div>
 
   <footer class="footer">
@@ -232,16 +321,49 @@
       window.location.href = 'login.html';
     } else {
       const user = JSON.parse(raw);
-      document.getElementById('userName').textContent    = user.name || user.username || '회원';
-      document.getElementById('infoName').textContent    = user.name || '-';
+      document.getElementById('userName').textContent     = user.name || user.username || '회원';
+      document.getElementById('infoName').textContent     = user.name || '-';
       document.getElementById('infoUsername').textContent = user.username || '-';
-      document.getElementById('infoEmail').textContent   = user.email || '-';
+      document.getElementById('infoEmail').textContent    = user.email || '-';
     }
 
     function logout() {
       localStorage.removeItem('ss_user');
       window.location.href = 'index.html';
     }
+
+    function getList(key) { try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; } }
+
+    function concertItemHTML(c) {
+      const thumb = c.poster
+        ? `<img class="activity-item__thumb" src="${c.poster}" alt="${c.title}" />`
+        : `<div class="activity-item__thumb-placeholder">🎭</div>`;
+      return `<a class="activity-item" href="concert.html?id=${c.id}&type=${c.type || 'upcoming'}">
+        ${thumb}
+        <span class="activity-item__title">${c.title}</span>
+      </a>`;
+    }
+
+    function zineItemHTML(z) {
+      const thumb = z.thumbnail
+        ? `<img class="activity-item__thumb" src="${z.thumbnail}" alt="${z.title}" />`
+        : `<div class="activity-item__thumb-placeholder">📖</div>`;
+      return `<a class="activity-item" href="${z.url}">
+        ${thumb}
+        <span class="activity-item__title">${z.title}</span>
+      </a>`;
+    }
+
+    function renderList(elId, items, renderFn) {
+      const el = document.getElementById(elId);
+      if (!items.length) return;
+      el.innerHTML = items.map(renderFn).join('');
+    }
+
+    renderList('recentConcerts', getList('ss_recent_concerts'), concertItemHTML);
+    renderList('likedConcerts',  getList('ss_liked_concerts'),  concertItemHTML);
+    renderList('bookedConcerts', getList('ss_booked_concerts'), concertItemHTML);
+    renderList('recentZines',    getList('ss_recent_zines'),    zineItemHTML);
   </script>
 </body>
 </html>

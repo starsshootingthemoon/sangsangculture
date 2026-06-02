@@ -56,6 +56,14 @@
     .concert__btn:active { transform: scale(0.98); }
     .concert__btn--disabled { background: #ccc; cursor: not-allowed; pointer-events: none; }
 
+    .concert__action-row { display: flex; gap: 12px; align-items: center; margin-top: 32px; flex-wrap: wrap; }
+    .concert__btn-book { flex: 1; display: inline-flex; align-items: center; justify-content: center; height: 60px; background: var(--color-green); border: none; border-radius: 12px; font-family: var(--font-main); font-weight: 700; font-size: 18px; color: #fff; text-decoration: none; cursor: pointer; transition: background 0.2s, transform 0.1s; }
+    .concert__btn-book:hover { background: #83a34c; }
+    .concert__btn-book:active { transform: scale(0.98); }
+    .concert__btn-like { width: 60px; height: 60px; border: 2px solid #ddd; border-radius: 12px; background: #fff; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s, background 0.2s; flex-shrink: 0; }
+    .concert__btn-like:hover { border-color: #e05; }
+    .concert__btn-like.liked { border-color: #e05; background: #fff0f0; }
+
     /* Tab Header */
     .concert__tab-header { display: flex; align-items: center; gap: 32px; padding-bottom: 14px; border-bottom: 1.5px solid #ddd; margin-bottom: 40px; }
     .concert__tab { font-family: var(--font-main); font-weight: 700; font-size: 18px; color: #000; padding-bottom: 12px; margin-bottom: -16px; border-bottom: 3px solid #000; }
@@ -136,7 +144,13 @@
           <h1 class="concert__title-ko" id="titleKo">​</h1>
           <p class="concert__title-en" id="titleEn" style="display:none;"></p>
           <div class="concert__meta" id="metaGrid"></div>
-          <a class="concert__btn" id="ctaBtn" href="#" target="_blank" rel="noopener">예매 신청하기</a>
+          <div class="concert__action-row">
+            <a class="concert__btn-book" id="ctaBtn" href="#" target="_blank" rel="noopener">예매 신청하기</a>
+            <button class="concert__btn-like" id="likeBtn" onclick="toggleLike()" title="찜하기">🤍</button>
+          </div>
+          <div style="margin-top:8px; display:flex; gap:16px;">
+            <button id="bookmarkBtn" onclick="bookConcert()" style="background:none;border:none;font-size:14px;color:#95B658;cursor:pointer;font-weight:600;padding:0;">✅ 예매 완료로 저장</button>
+          </div>
         </div>
       </div>
 
@@ -301,11 +315,76 @@
         // 로딩 상태 → 콘텐츠로 전환
         document.getElementById('loadingState').style.display = 'none';
         document.getElementById('concertContent').style.display = 'block';
+
+        // 활동 기록
+        currentConcert = {
+          id,
+          type,
+          title: stripHtml(title),
+          poster: post.featured_image_url || '',
+          date: new Date().toISOString(),
+        };
+        saveRecentConcert(currentConcert);
+        initButtons(id);
+
       } catch (e) {
         showError('공연 정보를 불러올 수 없습니다.');
       }
     }
+
+    let currentConcert = null;
     loadConcert();
+
+    // ── 활동 기록 유틸 ──────────────────────────────────────────
+    function getList(key) { try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; } }
+    function saveList(key, arr) { localStorage.setItem(key, JSON.stringify(arr)); }
+
+    // 최근 본 공연 저장
+    function saveRecentConcert(concert) {
+      let list = getList('ss_recent_concerts');
+      list = list.filter(c => c.id !== concert.id);
+      list.unshift(concert);
+      saveList('ss_recent_concerts', list.slice(0, 10));
+    }
+
+    // 찜하기 토글
+    function toggleLike() {
+      if (!localStorage.getItem('ss_user')) { alert('로그인이 필요합니다.'); window.location.href = 'login.html'; return; }
+      const id = getParam('id');
+      let liked = getList('ss_liked_concerts');
+      const btn = document.getElementById('likeBtn');
+      if (liked.find(c => c.id === id)) {
+        liked = liked.filter(c => c.id !== id);
+        btn.textContent = '🤍';
+        btn.classList.remove('liked');
+      } else {
+        liked.unshift(currentConcert);
+        btn.textContent = '❤️';
+        btn.classList.add('liked');
+      }
+      saveList('ss_liked_concerts', liked);
+    }
+
+    // 예매 완료 저장
+    function bookConcert() {
+      if (!localStorage.getItem('ss_user')) { alert('로그인이 필요합니다.'); window.location.href = 'login.html'; return; }
+      let booked = getList('ss_booked_concerts');
+      const id = getParam('id');
+      if (booked.find(c => c.id === id)) { alert('이미 예매 목록에 저장되어 있어요!'); return; }
+      booked.unshift(currentConcert);
+      saveList('ss_booked_concerts', booked);
+      alert('예매 목록에 저장됐어요!');
+      document.getElementById('bookmarkBtn').textContent = '✅ 저장됨';
+    }
+
+    // 찜/예매 버튼 초기 상태
+    function initButtons(id) {
+      const liked  = getList('ss_liked_concerts');
+      const booked = getList('ss_booked_concerts');
+      const likeBtn = document.getElementById('likeBtn');
+      if (liked.find(c => c.id === id)) { likeBtn.textContent = '❤️'; likeBtn.classList.add('liked'); }
+      if (booked.find(c => c.id === id)) { document.getElementById('bookmarkBtn').textContent = '✅ 저장됨'; }
+    }
   </script>
 </body>
 </html>
