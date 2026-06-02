@@ -47,7 +47,7 @@ document.addEventListener('keydown', function(e) {
     const authEl = document.querySelector('.navbar__auth');
     if (authEl) {
       authEl.innerHTML = `
-        <span style="font-size:14px; font-weight:700; color:#95B658;">${name}님!</span>
+        <span style="font-size:14px; font-weight:700; color:#95B658;">${name}님, 안녕하세요!</span>
         <span style="${divStyle}">|</span>
         <a href="mypage.html" style="${linkStyle}">마이페이지</a>
         <span style="${divStyle}">|</span>
