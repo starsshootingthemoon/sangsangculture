@@ -334,7 +334,7 @@
       errEl.style.display = 'none';
 
       try {
-        const res = await fetch(API + '/jwt-auth/v1/token', {
+        const res = await fetch(API + '/sangsang/v1/login', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ username, password })
@@ -345,8 +345,7 @@
           throw new Error(data.message || '아이디 또는 비밀번호가 올바르지 않습니다.');
         }
 
-        localStorage.setItem('ss_token', data.token);
-        localStorage.setItem('ss_user', JSON.stringify({ username: data.user_nicename, email: data.user_email }));
+        localStorage.setItem('ss_user', JSON.stringify({ username: data.user_login, email: data.user_email, name: data.display_name }));
         window.location.href = 'index.html';
 
       } catch (err) {
