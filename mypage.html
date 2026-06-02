@@ -93,20 +93,69 @@
     .info-row .label { color: #888; font-weight: 500; }
     .info-row .value { color: var(--color-dark); font-weight: 600; }
 
-    .logout-btn {
-      width: 100%;
+    .btn-row {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+    .logout-btn, .change-pw-btn {
+      flex: 1;
       height: 52px;
-      background: #f0f0f0;
       border: none;
       border-radius: 12px;
       font-size: 16px;
       font-weight: 600;
-      color: #666;
       cursor: pointer;
-      margin-top: 8px;
       transition: background 0.2s;
     }
+    .logout-btn { background: #f0f0f0; color: #666; }
     .logout-btn:hover { background: #e5e5e5; }
+    .change-pw-btn { background: var(--color-green); color: #fff; }
+    .change-pw-btn:hover { background: #83a34c; }
+
+    /* 비밀번호 변경 모달 */
+    .pw-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .pw-modal-overlay.open { display: flex; }
+    .pw-modal {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px 36px;
+      width: 420px;
+      max-width: 90vw;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .pw-modal h2 { font-size: 20px; font-weight: 700; color: #1a1a1a; }
+    .pw-modal input {
+      width: 100%;
+      height: 50px;
+      border: 1px solid rgba(52,52,52,0.3);
+      border-radius: 10px;
+      padding: 0 16px;
+      font-size: 16px;
+      font-family: var(--font-main);
+      outline: none;
+    }
+    .pw-modal input:focus { border-color: var(--color-green); box-shadow: 0 0 0 3px rgba(149,182,88,0.15); }
+    .pw-modal-btns { display: flex; gap: 10px; margin-top: 4px; }
+    .pw-modal-btns button {
+      flex: 1; height: 48px; border: none; border-radius: 10px;
+      font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+    }
+    .pw-modal-submit { background: var(--color-green); color: #fff; }
+    .pw-modal-submit:hover { background: #83a34c; }
+    .pw-modal-cancel { background: #f0f0f0; color: #666; }
+    .pw-modal-cancel:hover { background: #e5e5e5; }
+    .pw-modal-msg { font-size: 14px; text-align: center; min-height: 20px; }
 
     /* ───── 활동 섹션 ───── */
     .activity-card {
@@ -423,7 +472,10 @@
       </div>
     </div>
 
-    <button class="logout-btn" onclick="logout()">로그아웃</button>
+    <div class="btn-row">
+      <button class="change-pw-btn" onclick="document.getElementById('pwModal').classList.add('open')">비밀번호 변경</button>
+      <button class="logout-btn" onclick="logout()">로그아웃</button>
+    </div>
 
     <!-- 최근 본 공연 -->
     <div class="activity-card" style="margin-top:32px;">
@@ -467,6 +519,21 @@
       <div id="myComments"><div class="activity-empty">불러오는 중…</div></div>
     </div>
 
+  </div>
+
+  <!-- 비밀번호 변경 모달 -->
+  <div class="pw-modal-overlay" id="pwModal">
+    <div class="pw-modal">
+      <h2>비밀번호 변경</h2>
+      <input type="password" id="pwCurrent" placeholder="현재 비밀번호" />
+      <input type="password" id="pwNew" placeholder="새 비밀번호" />
+      <input type="password" id="pwConfirm" placeholder="새 비밀번호 확인" />
+      <p class="pw-modal-msg" id="pwMsg"></p>
+      <div class="pw-modal-btns">
+        <button class="pw-modal-cancel" onclick="closePwModal()">취소</button>
+        <button class="pw-modal-submit" onclick="handleChangePw()">변경하기</button>
+      </div>
+    </div>
   </div>
 
   <!-- 더보기 모달 -->
@@ -539,6 +606,44 @@
       document.getElementById('infoName').textContent     = user.name || '-';
       document.getElementById('infoUsername').textContent = user.username || '-';
       document.getElementById('infoEmail').textContent    = user.email || '-';
+    }
+
+    function closePwModal() {
+      document.getElementById('pwModal').classList.remove('open');
+      document.getElementById('pwCurrent').value = '';
+      document.getElementById('pwNew').value = '';
+      document.getElementById('pwConfirm').value = '';
+      document.getElementById('pwMsg').textContent = '';
+      document.getElementById('pwMsg').style.color = '';
+    }
+
+    async function handleChangePw() {
+      const current = document.getElementById('pwCurrent').value;
+      const newPw   = document.getElementById('pwNew').value;
+      const confirm = document.getElementById('pwConfirm').value;
+      const msg     = document.getElementById('pwMsg');
+
+      msg.style.color = '#e05';
+      if (!current || !newPw || !confirm) { msg.textContent = '모든 항목을 입력해주세요.'; return; }
+      if (newPw !== confirm) { msg.textContent = '새 비밀번호가 일치하지 않습니다.'; return; }
+      if (newPw.length < 6) { msg.textContent = '비밀번호는 6자 이상이어야 합니다.'; return; }
+
+      const user = JSON.parse(localStorage.getItem('ss_user'));
+      try {
+        const res = await fetch(window.location.origin + '/wp-json/sangsang/v1/change-pw', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: user.username, current_password: current, new_password: newPw })
+        });
+        const data = await res.json();
+        if (!res.ok) { msg.textContent = data.message || '비밀번호 변경에 실패했습니다.'; return; }
+        msg.style.color = '#2d6a4f';
+        msg.textContent = '비밀번호가 변경됐습니다. 다시 로그인해주세요.';
+        localStorage.removeItem('ss_pw');
+        setTimeout(() => { closePwModal(); logout(); }, 1500);
+      } catch {
+        msg.textContent = '오류가 발생했습니다. 다시 시도해주세요.';
+      }
     }
 
     function logout() {

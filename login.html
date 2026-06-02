@@ -258,6 +258,64 @@
     }
     .find-links a:hover { color: var(--color-green); }
 
+    .change-pw-link {
+      margin-top: 12px;
+      text-align: center;
+      font-size: 15px;
+    }
+    .change-pw-link a {
+      color: var(--color-green);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* 비밀번호 변경 모달 */
+    .pw-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .pw-modal-overlay.open { display: flex; }
+    .pw-modal {
+      background: #fff;
+      border-radius: 16px;
+      padding: 40px 36px;
+      width: 420px;
+      max-width: 90vw;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .pw-modal h2 { font-size: 20px; font-weight: 700; color: #1a1a1a; }
+    .pw-modal p  { font-size: 14px; color: #666; margin-top: -6px; }
+    .pw-modal .form-input { font-size: 16px; height: 50px; }
+    .pw-modal-close {
+      align-self: flex-end;
+      background: none;
+      border: none;
+      font-size: 22px;
+      cursor: pointer;
+      color: #888;
+      line-height: 1;
+      margin-bottom: -8px;
+    }
+    .pw-modal-btns { display: flex; gap: 10px; margin-top: 4px; }
+    .pw-modal-btns button {
+      flex: 1; height: 48px; border: none; border-radius: 10px;
+      font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s;
+    }
+    .pw-modal-submit { background: var(--color-green); color: #fff; }
+    .pw-modal-submit:hover { background: #83a34c; }
+    .pw-modal-cancel { background: #f0f0f0; color: #666; }
+    .pw-modal-cancel:hover { background: #e5e5e5; }
+    .pw-modal-msg { font-size: 14px; text-align: center; min-height: 18px; }
+
     /* 모달 */
     .modal-overlay {
       display: none;
@@ -411,10 +469,32 @@
       <a onclick="openModal('findPw')">비밀번호 찾기</a>
     </div>
 
+    <div class="change-pw-link">
+      <a onclick="document.getElementById('pwModal').classList.add('open')">비밀번호 변경</a>
+    </div>
+
     <p class="form-footer-link">
       계정이 없다면? <a href="signup.html">회원가입하기</a>
     </p>
   </main>
+
+  <!-- 비밀번호 변경 모달 -->
+  <div class="pw-modal-overlay" id="pwModal">
+    <div class="pw-modal">
+      <button class="pw-modal-close" onclick="closePwModal()">✕</button>
+      <h2>비밀번호 변경</h2>
+      <p>아이디와 현재 비밀번호를 확인 후 새 비밀번호로 변경합니다.</p>
+      <input class="form-input" type="text"     id="pwUsername" placeholder="아이디" />
+      <input class="form-input" type="password" id="pwCurrent"  placeholder="현재 비밀번호" />
+      <input class="form-input" type="password" id="pwNew"      placeholder="새 비밀번호" />
+      <input class="form-input" type="password" id="pwConfirm"  placeholder="새 비밀번호 확인" />
+      <p class="pw-modal-msg" id="pwMsg"></p>
+      <div class="pw-modal-btns">
+        <button class="pw-modal-cancel" onclick="closePwModal()">취소</button>
+        <button class="pw-modal-submit" onclick="handleChangePw()">변경하기</button>
+      </div>
+    </div>
+  </div>
 
   <!-- 아이디 찾기 모달 -->
   <div class="modal-overlay" id="modalFindId">
@@ -515,6 +595,42 @@
       } catch {
         result.style.display = 'block';
         result.textContent = '오류가 발생했습니다. 다시 시도해주세요.';
+      }
+    }
+
+    function closePwModal() {
+      document.getElementById('pwModal').classList.remove('open');
+      ['pwUsername','pwCurrent','pwNew','pwConfirm'].forEach(id => document.getElementById(id).value = '');
+      const msg = document.getElementById('pwMsg');
+      msg.textContent = '';
+      msg.style.color = '';
+    }
+
+    async function handleChangePw() {
+      const username = document.getElementById('pwUsername').value.trim();
+      const current  = document.getElementById('pwCurrent').value;
+      const newPw    = document.getElementById('pwNew').value;
+      const confirm  = document.getElementById('pwConfirm').value;
+      const msg      = document.getElementById('pwMsg');
+
+      msg.style.color = '#e05';
+      if (!username || !current || !newPw || !confirm) { msg.textContent = '모든 항목을 입력해주세요.'; return; }
+      if (newPw !== confirm) { msg.textContent = '새 비밀번호가 일치하지 않습니다.'; return; }
+      if (newPw.length < 6) { msg.textContent = '비밀번호는 6자 이상이어야 합니다.'; return; }
+
+      try {
+        const res = await fetch(API + '/sangsang/v1/change-pw', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, current_password: current, new_password: newPw })
+        });
+        const data = await res.json();
+        if (!res.ok) { msg.textContent = data.message || '비밀번호 변경에 실패했습니다.'; return; }
+        msg.style.color = '#2d6a4f';
+        msg.textContent = '비밀번호가 변경됐습니다!';
+        setTimeout(closePwModal, 1500);
+      } catch {
+        msg.textContent = '오류가 발생했습니다. 다시 시도해주세요.';
       }
     }
 
