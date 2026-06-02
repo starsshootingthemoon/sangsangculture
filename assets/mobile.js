@@ -31,6 +31,40 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeMenu();
 });
 
+// 협력사/제휴사 로고 로딩
+(async function loadPartners() {
+  const el = document.getElementById('footerPartners');
+  if (!el) return;
+  try {
+    const res = await fetch(window.location.origin + '/wp-json/wp/v2/partners?per_page=20&_fields=id,title,featured_image_url,link');
+    if (!res.ok) return;
+    const partners = await res.json();
+    if (!partners.length) return;
+
+    el.style.cssText = 'display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:16px; padding:28px 40px; border-bottom:1px solid rgba(255,255,255,0.12); margin-bottom:20px;';
+
+    partners.forEach(p => {
+      if (!p.featured_image_url) return;
+      const a = document.createElement('a');
+      a.href = p.link || '#';
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.title = p.title?.rendered || '';
+      a.style.cssText = 'display:inline-flex; align-items:center; justify-content:center; background:rgba(255,255,255,0.08); border-radius:10px; padding:10px 16px; transition:background 0.2s;';
+      a.onmouseover = () => a.style.background = 'rgba(255,255,255,0.18)';
+      a.onmouseout  = () => a.style.background = 'rgba(255,255,255,0.08)';
+
+      const img = document.createElement('img');
+      img.src = p.featured_image_url;
+      img.alt = p.title?.rendered || '';
+      img.style.cssText = 'height:36px; width:auto; max-width:120px; object-fit:contain; filter:brightness(0) invert(1); opacity:0.75;';
+
+      a.appendChild(img);
+      el.appendChild(a);
+    });
+  } catch (e) {}
+})();
+
 // 로그인 상태에 따라 네브바 업데이트
 (function updateAuthNav() {
   const raw = localStorage.getItem('ss_user');
