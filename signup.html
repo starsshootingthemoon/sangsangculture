@@ -354,24 +354,65 @@
     <h1 class="form-title">SIGN IN</h1>
     <p class="form-subtitle">상상 문화의 더 다양한 콘텐츠를 경험하기 위해 회원가입 해 주세요.</p>
 
-    <form class="form-box" onsubmit="return false;">
-      <input class="form-input" type="text"     placeholder="이름"     autocomplete="name" />
-      <input class="form-input" type="email"    placeholder="이메일"   autocomplete="email" />
-      <input class="form-input" type="text"     placeholder="아이디"   autocomplete="username" />
-      <input class="form-input" type="password" placeholder="비밀번호" autocomplete="new-password" />
+    <form class="form-box" id="signupForm" onsubmit="handleSignup(event)">
+      <input class="form-input" type="text"     id="name"     placeholder="이름"     autocomplete="name" required />
+      <input class="form-input" type="email"    id="email"    placeholder="이메일"   autocomplete="email" required />
+      <input class="form-input" type="text"     id="username" placeholder="아이디"   autocomplete="username" required />
+      <input class="form-input" type="password" id="password" placeholder="비밀번호" autocomplete="new-password" required />
 
       <div class="newsletter-row">
         <input type="checkbox" id="newsletter" checked />
         <label for="newsletter">상상문화의 뉴스레터를 받아 보시겠습니까? (선택)</label>
       </div>
 
-      <button class="form-btn" type="submit">회원가입</button>
+      <p id="signupError" style="color:#e05; font-size:14px; margin-top:-8px; display:none;"></p>
+      <button class="form-btn" type="submit" id="signupBtn">회원가입</button>
     </form>
 
     <p class="form-footer-link">
       계정이 있다면? <a href="login.html">로그인하기</a>
     </p>
   </main>
+
+  <script>
+    const API = window.location.origin + '/wp-json';
+
+    async function handleSignup(e) {
+      e.preventDefault();
+      const btn = document.getElementById('signupBtn');
+      const errEl = document.getElementById('signupError');
+      const name     = document.getElementById('name').value.trim();
+      const email    = document.getElementById('email').value.trim();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      btn.disabled = true;
+      btn.textContent = '처리 중...';
+      errEl.style.display = 'none';
+
+      try {
+        const res = await fetch(API + '/wp/v2/users/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, username, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || '회원가입에 실패했습니다. 다시 시도해주세요.');
+        }
+
+        alert('회원가입이 완료됐습니다! 로그인해주세요.');
+        window.location.href = 'login.html';
+
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = '회원가입';
+      }
+    }
+  </script>
 
   <!-- ══ Footer ══ -->
   <footer class="footer">

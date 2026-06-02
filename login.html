@@ -307,16 +307,61 @@
     <h1 class="form-title">LOGIN</h1>
     <p class="form-subtitle">상상 문화의 더 다양한 콘텐츠를 경험하기 위해 로그인 해 주세요.</p>
 
-    <form class="form-box" onsubmit="return false;">
-      <input class="form-input" type="text"     placeholder="아이디"   autocomplete="username" />
-      <input class="form-input" type="password" placeholder="비밀번호" autocomplete="current-password" />
-      <button class="form-btn" type="submit">로그인</button>
+    <form class="form-box" id="loginForm" onsubmit="handleLogin(event)">
+      <input class="form-input" type="text"     id="username" placeholder="아이디"   autocomplete="username" required />
+      <input class="form-input" type="password" id="password" placeholder="비밀번호" autocomplete="current-password" required />
+      <p id="loginError" style="color:#e05; font-size:14px; margin-top:-8px; display:none;"></p>
+      <button class="form-btn" type="submit" id="loginBtn">로그인</button>
     </form>
 
     <p class="form-footer-link">
       계정이 없다면? <a href="signup.html">회원가입하기</a>
     </p>
   </main>
+
+  <script>
+    const API = window.location.origin + '/wp-json';
+
+    async function handleLogin(e) {
+      e.preventDefault();
+      const btn = document.getElementById('loginBtn');
+      const errEl = document.getElementById('loginError');
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+
+      btn.disabled = true;
+      btn.textContent = '로그인 중...';
+      errEl.style.display = 'none';
+
+      try {
+        const res = await fetch(API + '/jwt-auth/v1/token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || '아이디 또는 비밀번호가 올바르지 않습니다.');
+        }
+
+        localStorage.setItem('ss_token', data.token);
+        localStorage.setItem('ss_user', JSON.stringify({ username: data.user_nicename, email: data.user_email }));
+        window.location.href = 'index.html';
+
+      } catch (err) {
+        errEl.textContent = err.message;
+        errEl.style.display = 'block';
+        btn.disabled = false;
+        btn.textContent = '로그인';
+      }
+    }
+
+    // 이미 로그인된 경우 메인으로
+    if (localStorage.getItem('ss_token')) {
+      window.location.href = 'index.html';
+    }
+  </script>
 
   <!-- ══ Footer ══ -->
   <footer class="footer">
