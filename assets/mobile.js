@@ -40,13 +40,18 @@ document.addEventListener('keydown', function(e) {
     const user = JSON.parse(raw);
     const name = user.name || user.username || '회원';
 
+    const linkStyle = 'font-size:14px; font-weight:500; color:#9FA0A0; text-decoration:none;';
+    const divStyle  = 'color:#ddd;';
+
     // 데스크톱 네브바
     const authEl = document.querySelector('.navbar__auth');
     if (authEl) {
       authEl.innerHTML = `
-        <span style="font-weight:600; color:#30312B;">${name}님! 안녕하세요</span>
-        <span class="divider">|</span>
-        <a href="#" onclick="logout(event)" style="font-size:13px; color:#9FA0A0;">로그아웃</a>
+        <span style="font-size:14px; font-weight:700; color:#95B658;">${name}님!</span>
+        <span style="${divStyle}">|</span>
+        <a href="mypage.html" style="${linkStyle}">마이페이지</a>
+        <span style="${divStyle}">|</span>
+        <a href="#" onclick="logout(event)" style="${linkStyle}">로그아웃</a>
       `;
     }
 
@@ -54,9 +59,11 @@ document.addEventListener('keydown', function(e) {
     const mobileAuth = document.querySelector('.mobile-nav__auth');
     if (mobileAuth) {
       mobileAuth.innerHTML = `
-        <span style="font-weight:600; color:#30312B; font-size:15px;">${name}님! 안녕하세요</span>
+        <span style="font-size:15px; font-weight:700; color:#95B658;">${name}님!</span>
         <div class="auth-divider"></div>
-        <a href="#" onclick="logout(event)" style="color:#9FA0A0;">로그아웃</a>
+        <a href="mypage.html" style="${linkStyle}">마이페이지</a>
+        <div class="auth-divider"></div>
+        <a href="#" onclick="logout(event)" style="${linkStyle}">로그아웃</a>
       `;
     }
   } catch (e) {}
