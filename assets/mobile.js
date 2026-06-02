@@ -46,7 +46,7 @@ document.addEventListener('keydown', function(e) {
     partners.forEach(p => {
       if (!p.featured_image_url) return;
       const a = document.createElement('a');
-      a.href = p.link || '#';
+      a.href = p.partner_link || p.link || '#';
       a.target = '_blank';
       a.rel = 'noopener';
       a.title = p.title?.rendered || '';
