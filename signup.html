@@ -391,10 +391,10 @@
       errEl.style.display = 'none';
 
       try {
-        const res = await fetch(API + '/wp/v2/users', {
+        const res = await fetch(API + '/sangsang/v1/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, username, password, roles: ['subscriber'] })
+          body: JSON.stringify({ name, email, username, password })
         });
         const data = await res.json();
 
