@@ -106,44 +106,71 @@
     .logout-btn:hover { background: #e5e5e5; }
 
     /* ───── 활동 섹션 ───── */
-    .section-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--color-dark);
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
     .activity-card {
       background: #f9f9f9;
       border-radius: 16px;
       padding: 20px 24px;
       margin-bottom: 20px;
     }
-
-    /* 공연 포스터 그리드 */
-    .poster-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
     }
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--color-dark);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-more {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--color-green);
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+    }
+    .section-more:hover { opacity: 0.75; }
+
+    /* 슬라이드 래퍼 */
+    .slide-wrap {
+      position: relative;
+    }
+    .slide-track {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
+      padding-bottom: 4px;
+    }
+    .slide-track::-webkit-scrollbar { display: none; }
+
+    /* 공연 포스터 슬라이드 아이템 */
     .poster-item {
       text-decoration: none;
       display: flex;
       flex-direction: column;
       gap: 6px;
+      flex: 0 0 120px;
+      scroll-snap-align: start;
     }
     .poster-item__img {
-      width: 100%;
-      aspect-ratio: 3/4;
+      width: 120px;
+      height: 160px;
       object-fit: cover;
       border-radius: 8px;
       background: #e8e8e8;
     }
     .poster-item__placeholder {
-      width: 100%;
-      aspect-ratio: 3/4;
+      width: 120px;
+      height: 160px;
       border-radius: 8px;
       background: #e8e8e8;
       display: flex;
@@ -152,36 +179,34 @@
       font-size: 28px;
     }
     .poster-item__title {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--color-dark);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      width: 120px;
     }
 
-    /* ZINE 가로 포스터 그리드 */
-    .zine-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-    }
+    /* ZINE 슬라이드 아이템 */
     .zine-item {
       text-decoration: none;
       display: flex;
       flex-direction: column;
       gap: 6px;
+      flex: 0 0 200px;
+      scroll-snap-align: start;
     }
     .zine-item__img {
-      width: 100%;
-      aspect-ratio: 16/9;
+      width: 200px;
+      height: 112px;
       object-fit: cover;
       border-radius: 8px;
       background: #e8e8e8;
     }
     .zine-item__placeholder {
-      width: 100%;
-      aspect-ratio: 16/9;
+      width: 200px;
+      height: 112px;
       border-radius: 8px;
       background: #e8e8e8;
       display: flex;
@@ -190,12 +215,13 @@
       font-size: 28px;
     }
     .zine-item__title {
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 600;
       color: var(--color-dark);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      width: 200px;
     }
 
     .activity-empty {
@@ -203,6 +229,103 @@
       color: #aaa;
       text-align: center;
       padding: 16px 0;
+    }
+
+    /* ───── 더보기 모달 ───── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal-box {
+      background: #fff;
+      border-radius: 20px;
+      padding: 28px 24px;
+      width: 560px;
+      max-width: 92vw;
+      max-height: 80vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .modal-box__header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .modal-box__title { font-size: 18px; font-weight: 700; color: var(--color-dark); }
+    .modal-close { background: none; border: none; font-size: 22px; cursor: pointer; color: #aaa; }
+
+    /* 모달 내 그리드 */
+    .modal-poster-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    .modal-poster-item {
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .modal-poster-item img, .modal-poster-item__placeholder {
+      width: 100%;
+      aspect-ratio: 3/4;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #e8e8e8;
+    }
+    .modal-poster-item__placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .modal-poster-item span {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-dark);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .modal-zine-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+    .modal-zine-item {
+      text-decoration: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .modal-zine-item img, .modal-zine-item__placeholder {
+      width: 100%;
+      aspect-ratio: 16/9;
+      object-fit: cover;
+      border-radius: 8px;
+      background: #e8e8e8;
+    }
+    .modal-zine-item__placeholder {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+    .modal-zine-item span {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--color-dark);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     /* ───── Footer ───── */
@@ -279,28 +402,51 @@
 
     <!-- 최근 본 공연 -->
     <div class="activity-card" style="margin-top:32px;">
-      <div class="section-title">🎭 최근 본 공연</div>
-      <div class="poster-grid" id="recentConcerts"><div class="activity-empty" style="grid-column:1/-1;">아직 본 공연이 없어요</div></div>
+      <div class="section-header">
+        <div class="section-title">🎭 최근 본 공연</div>
+        <button class="section-more" onclick="openModal('recentConcerts')">더보기</button>
+      </div>
+      <div class="slide-wrap"><div class="slide-track" id="recentConcerts"><div class="activity-empty">아직 본 공연이 없어요</div></div></div>
     </div>
 
     <!-- 내가 찜한 공연 -->
     <div class="activity-card">
-      <div class="section-title">❤️ 찜한 공연</div>
-      <div class="poster-grid" id="likedConcerts"><div class="activity-empty" style="grid-column:1/-1;">찜한 공연이 없어요</div></div>
+      <div class="section-header">
+        <div class="section-title">❤️ 찜한 공연</div>
+        <button class="section-more" onclick="openModal('likedConcerts')">더보기</button>
+      </div>
+      <div class="slide-wrap"><div class="slide-track" id="likedConcerts"><div class="activity-empty">찜한 공연이 없어요</div></div></div>
     </div>
 
     <!-- 내가 예매한 공연 -->
     <div class="activity-card">
-      <div class="section-title">✅ 예매한 공연</div>
-      <div class="poster-grid" id="bookedConcerts"><div class="activity-empty" style="grid-column:1/-1;">예매한 공연이 없어요</div></div>
+      <div class="section-header">
+        <div class="section-title">✅ 예매한 공연</div>
+        <button class="section-more" onclick="openModal('bookedConcerts')">더보기</button>
+      </div>
+      <div class="slide-wrap"><div class="slide-track" id="bookedConcerts"><div class="activity-empty">예매한 공연이 없어요</div></div></div>
     </div>
 
     <!-- 최근 본 ZINE -->
     <div class="activity-card">
-      <div class="section-title">📖 최근 본 상상ZINE</div>
-      <div class="zine-grid" id="recentZines"><div class="activity-empty" style="grid-column:1/-1;">아직 본 글이 없어요</div></div>
+      <div class="section-header">
+        <div class="section-title">📖 최근 본 상상ZINE</div>
+        <button class="section-more" onclick="openModal('recentZines')">더보기</button>
+      </div>
+      <div class="slide-wrap"><div class="slide-track" id="recentZines"><div class="activity-empty">아직 본 글이 없어요</div></div></div>
     </div>
 
+  </div>
+
+  <!-- 더보기 모달 -->
+  <div class="modal-overlay" id="moreModal" onclick="closeModal(event)">
+    <div class="modal-box">
+      <div class="modal-box__header">
+        <span class="modal-box__title" id="modalTitle"></span>
+        <button class="modal-close" onclick="document.getElementById('moreModal').classList.remove('open')">✕</button>
+      </div>
+      <div id="modalContent"></div>
+    </div>
   </div>
 
   <footer class="footer">
@@ -370,36 +516,73 @@
 
     function getList(key) { try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; } }
 
+    // 슬라이드 아이템 HTML
     function concertItemHTML(c) {
       const img = c.poster
         ? `<img class="poster-item__img" src="${c.poster}" alt="${c.title}" />`
         : `<div class="poster-item__placeholder">🎭</div>`;
-      return `<a class="poster-item" href="concert.html?id=${c.id}&type=${c.type || 'upcoming'}">
-        ${img}
-        <span class="poster-item__title">${c.title}</span>
-      </a>`;
+      return `<a class="poster-item" href="concert.html?id=${c.id}&type=${c.type || 'upcoming'}">${img}<span class="poster-item__title">${c.title}</span></a>`;
     }
-
     function zineItemHTML(z) {
       const img = z.thumbnail
         ? `<img class="zine-item__img" src="${z.thumbnail}" alt="${z.title}" />`
         : `<div class="zine-item__placeholder">📖</div>`;
-      return `<a class="zine-item" href="${z.url}">
-        ${img}
-        <span class="zine-item__title">${z.title}</span>
-      </a>`;
+      return `<a class="zine-item" href="${z.url}">${img}<span class="zine-item__title">${z.title}</span></a>`;
     }
 
-    function renderGrid(elId, items, renderFn) {
+    // 모달 아이템 HTML
+    function concertModalHTML(c) {
+      const img = c.poster
+        ? `<img src="${c.poster}" alt="${c.title}" />`
+        : `<div class="modal-poster-item__placeholder">🎭</div>`;
+      return `<a class="modal-poster-item" href="concert.html?id=${c.id}&type=${c.type || 'upcoming'}">${img}<span>${c.title}</span></a>`;
+    }
+    function zineModalHTML(z) {
+      const img = z.thumbnail
+        ? `<img src="${z.thumbnail}" alt="${z.title}" />`
+        : `<div class="modal-zine-item__placeholder">📖</div>`;
+      return `<a class="modal-zine-item" href="${z.url}">${img}<span>${z.title}</span></a>`;
+    }
+
+    function renderSlide(elId, items, renderFn) {
       const el = document.getElementById(elId);
       if (!items.length) return;
       el.innerHTML = items.map(renderFn).join('');
     }
 
-    renderGrid('recentConcerts', getList('ss_recent_concerts'), concertItemHTML);
-    renderGrid('likedConcerts',  getList('ss_liked_concerts'),  concertItemHTML);
-    renderGrid('bookedConcerts', getList('ss_booked_concerts'), concertItemHTML);
-    renderGrid('recentZines',    getList('ss_recent_zines'),    zineItemHTML);
+    // 더보기 모달 데이터 저장
+    const modalData = {
+      recentConcerts: { title: '🎭 최근 본 공연',   key: 'ss_recent_concerts', type: 'concert' },
+      likedConcerts:  { title: '❤️ 찜한 공연',      key: 'ss_liked_concerts',  type: 'concert' },
+      bookedConcerts: { title: '✅ 예매한 공연',     key: 'ss_booked_concerts', type: 'concert' },
+      recentZines:    { title: '📖 최근 본 상상ZINE', key: 'ss_recent_zines',    type: 'zine'    },
+    };
+
+    function openModal(sectionId) {
+      const { title, key, type } = modalData[sectionId];
+      const items = getList(key);
+      document.getElementById('modalTitle').textContent = title;
+      const content = document.getElementById('modalContent');
+      if (!items.length) {
+        content.innerHTML = '<div class="activity-empty">아직 항목이 없어요</div>';
+      } else if (type === 'concert') {
+        content.innerHTML = `<div class="modal-poster-grid">${items.map(concertModalHTML).join('')}</div>`;
+      } else {
+        content.innerHTML = `<div class="modal-zine-grid">${items.map(zineModalHTML).join('')}</div>`;
+      }
+      document.getElementById('moreModal').classList.add('open');
+    }
+
+    function closeModal(e) {
+      if (e.target === document.getElementById('moreModal')) {
+        document.getElementById('moreModal').classList.remove('open');
+      }
+    }
+
+    renderSlide('recentConcerts', getList('ss_recent_concerts'), concertItemHTML);
+    renderSlide('likedConcerts',  getList('ss_liked_concerts'),  concertItemHTML);
+    renderSlide('bookedConcerts', getList('ss_booked_concerts'), concertItemHTML);
+    renderSlide('recentZines',    getList('ss_recent_zines'),    zineItemHTML);
   </script>
 </body>
 </html>
