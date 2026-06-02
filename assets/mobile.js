@@ -30,3 +30,40 @@ function closeMenu() {
 document.addEventListener('keydown', function(e) {
   if (e.key === 'Escape') closeMenu();
 });
+
+// 로그인 상태에 따라 네브바 업데이트
+(function updateAuthNav() {
+  const raw = localStorage.getItem('ss_user');
+  if (!raw) return;
+
+  try {
+    const user = JSON.parse(raw);
+    const name = user.name || user.username || '회원';
+
+    // 데스크톱 네브바
+    const authEl = document.querySelector('.navbar__auth');
+    if (authEl) {
+      authEl.innerHTML = `
+        <span style="font-weight:600; color:#30312B;">${name}님! 안녕하세요</span>
+        <span class="divider">|</span>
+        <a href="#" onclick="logout(event)" style="font-size:13px; color:#9FA0A0;">로그아웃</a>
+      `;
+    }
+
+    // 모바일 네브바
+    const mobileAuth = document.querySelector('.mobile-nav__auth');
+    if (mobileAuth) {
+      mobileAuth.innerHTML = `
+        <span style="font-weight:600; color:#30312B; font-size:15px;">${name}님! 안녕하세요</span>
+        <div class="auth-divider"></div>
+        <a href="#" onclick="logout(event)" style="color:#9FA0A0;">로그아웃</a>
+      `;
+    }
+  } catch (e) {}
+})();
+
+function logout(e) {
+  e.preventDefault();
+  localStorage.removeItem('ss_user');
+  window.location.href = 'index.html';
+}
