@@ -60,9 +60,12 @@
     .concert__btn-book { flex: 1; display: inline-flex; align-items: center; justify-content: center; height: 60px; background: var(--color-green); border: none; border-radius: 12px; font-family: var(--font-main); font-weight: 700; font-size: 18px; color: #fff; text-decoration: none; cursor: pointer; transition: background 0.2s, transform 0.1s; }
     .concert__btn-book:hover { background: #83a34c; }
     .concert__btn-book:active { transform: scale(0.98); }
-    .concert__btn-like { width: 60px; height: 60px; border: 2px solid #ddd; border-radius: 12px; background: #fff; font-size: 24px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s, background 0.2s; flex-shrink: 0; }
-    .concert__btn-like:hover { border-color: #e05; }
-    .concert__btn-like.liked { border-color: #e05; background: #fff0f0; }
+    .concert__btn-like { width: 60px; height: 60px; border: 2px solid #ddd; border-radius: 12px; background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: border-color 0.2s, background 0.2s; flex-shrink: 0; }
+    .concert__btn-like:hover { border-color: #95B658; }
+    .concert__btn-like.liked { border-color: #95B658; background: #f2f7e8; }
+    .concert__btn-like.liked .icon-heart { fill: #95B658; stroke: #95B658; }
+    .concert__btn-like.booked { border-color: #95B658; background: #f2f7e8; }
+    .concert__btn-like.booked .icon-bookmark { fill: #95B658; stroke: #95B658; }
 
     /* Tab Header */
     .concert__tab-header { display: flex; align-items: center; gap: 32px; padding-bottom: 14px; border-bottom: 1.5px solid #ddd; margin-bottom: 40px; }
@@ -145,9 +148,13 @@
           <p class="concert__title-en" id="titleEn" style="display:none;"></p>
           <div class="concert__meta" id="metaGrid"></div>
           <div class="concert__action-row">
-            <a class="concert__btn-book" id="ctaBtn" href="#" target="_blank" rel="noopener" style="display:none;">🎟 예매하기</a>
-            <button class="concert__btn-like" id="likeBtn" onclick="toggleLike()" title="찜하기">🤍</button>
-            <button class="concert__btn-like" id="bookmarkBtn" onclick="bookConcert()" title="예매저장" style="font-size:20px;">✅</button>
+            <a class="concert__btn-book" id="ctaBtn" href="#" target="_blank" rel="noopener" style="display:none;">예매하기</a>
+            <button class="concert__btn-like" id="likeBtn" onclick="toggleLike()" title="찜하기">
+              <svg class="icon-heart" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+            <button class="concert__btn-like" id="bookmarkBtn" onclick="bookConcert()" title="예매 저장">
+              <svg class="icon-bookmark" width="24" height="26" viewBox="0 0 24 24" fill="none" stroke="#ccc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </button>
           </div>
         </div>
       </div>
@@ -351,37 +358,60 @@
       const id = getParam('id');
       let liked = getList('ss_liked_concerts');
       const btn = document.getElementById('likeBtn');
+      const svg = btn.querySelector('.icon-heart');
       if (liked.find(c => c.id === id)) {
         liked = liked.filter(c => c.id !== id);
-        btn.textContent = '🤍';
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', '#ccc');
         btn.classList.remove('liked');
       } else {
         liked.unshift(currentConcert);
-        btn.textContent = '❤️';
+        svg.setAttribute('fill', '#95B658');
+        svg.setAttribute('stroke', '#95B658');
         btn.classList.add('liked');
       }
       saveList('ss_liked_concerts', liked);
     }
 
-    // 예매 완료 저장
+    // 예매 저장 토글
     function bookConcert() {
       if (!localStorage.getItem('ss_user')) { alert('로그인이 필요합니다.'); window.location.href = 'login.html'; return; }
-      let booked = getList('ss_booked_concerts');
       const id = getParam('id');
-      if (booked.find(c => c.id === id)) { alert('이미 예매 목록에 저장되어 있어요!'); return; }
-      booked.unshift(currentConcert);
+      let booked = getList('ss_booked_concerts');
+      const btn = document.getElementById('bookmarkBtn');
+      const svg = btn.querySelector('.icon-bookmark');
+      if (booked.find(c => c.id === id)) {
+        booked = booked.filter(c => c.id !== id);
+        svg.setAttribute('fill', 'none');
+        svg.setAttribute('stroke', '#ccc');
+        btn.classList.remove('booked');
+      } else {
+        booked.unshift(currentConcert);
+        svg.setAttribute('fill', '#95B658');
+        svg.setAttribute('stroke', '#95B658');
+        btn.classList.add('booked');
+      }
       saveList('ss_booked_concerts', booked);
-      alert('예매 목록에 저장됐어요!');
-      document.getElementById('bookmarkBtn').textContent = '✅ 저장됨';
     }
 
     // 찜/예매 버튼 초기 상태
     function initButtons(id) {
       const liked  = getList('ss_liked_concerts');
       const booked = getList('ss_booked_concerts');
-      const likeBtn = document.getElementById('likeBtn');
-      if (liked.find(c => c.id === id)) { likeBtn.textContent = '❤️'; likeBtn.classList.add('liked'); }
-      if (booked.find(c => c.id === id)) { document.getElementById('bookmarkBtn').textContent = '✅ 저장됨'; }
+      if (liked.find(c => c.id === id)) {
+        const btn = document.getElementById('likeBtn');
+        const svg = btn.querySelector('.icon-heart');
+        svg.setAttribute('fill', '#95B658');
+        svg.setAttribute('stroke', '#95B658');
+        btn.classList.add('liked');
+      }
+      if (booked.find(c => c.id === id)) {
+        const btn = document.getElementById('bookmarkBtn');
+        const svg = btn.querySelector('.icon-bookmark');
+        svg.setAttribute('fill', '#95B658');
+        svg.setAttribute('stroke', '#95B658');
+        btn.classList.add('booked');
+      }
     }
   </script>
 </body>
