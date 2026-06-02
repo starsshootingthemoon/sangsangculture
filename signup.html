@@ -334,7 +334,7 @@
         <li><a href="about.html">회사 소개</a></li>
         <li><a href="sangsang-madang.html">상상동행마당</a></li>
         <li><a href="sangsang-zine.html">상상ZINE</a></li>
-        <li><a href="https://smartstore.naver.com/sangsangbook" target="_blank">상상서가</a></li>
+        <li><a href="https://smartstore.naver.com/sangsangbook">상상서가</a></li>
         <li><a href="sangsang-story.html">상상STORY</a></li>
       </ul>
     </nav>
@@ -381,10 +381,11 @@
       e.preventDefault();
       const btn = document.getElementById('signupBtn');
       const errEl = document.getElementById('signupError');
-      const name     = document.getElementById('name').value.trim();
-      const email    = document.getElementById('email').value.trim();
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value;
+      const name       = document.getElementById('name').value.trim();
+      const email      = document.getElementById('email').value.trim();
+      const username   = document.getElementById('username').value.trim();
+      const password   = document.getElementById('password').value;
+      const newsletter = document.getElementById('newsletter').checked;
 
       btn.disabled = true;
       btn.textContent = '처리 중...';
@@ -394,7 +395,7 @@
         const res = await fetch(API + '/sangsang/v1/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name, email, username, password })
+          body: JSON.stringify({ name, email, username, password, newsletter })
         });
         const data = await res.json();
 
@@ -456,7 +457,7 @@
         <li><a href="about.html">회사 소개</a></li>
         <li><a href="sangsang-madang.html">상상동행마당</a></li>
         <li><a href="sangsang-zine.html">상상ZINE</a></li>
-        <li><a href="https://smartstore.naver.com/sangsangbook" target="_blank">상상서가</a></li>
+        <li><a href="https://smartstore.naver.com/sangsangbook">상상서가</a></li>
         <li><a href="sangsang-story.html">상상STORY</a></li>
     </ul>
     <div class="mobile-nav__auth">
