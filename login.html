@@ -258,19 +258,6 @@
     }
     .find-links a:hover { color: var(--color-green); }
 
-    .change-pw-link {
-      margin-top: 12px;
-      text-align: center;
-      font-size: 15px;
-    }
-    .change-pw-link a {
-      color: var(--color-green);
-      text-decoration: underline;
-      text-underline-offset: 3px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
     /* 비밀번호 변경 모달 */
     .pw-modal-overlay {
       display: none;
@@ -467,9 +454,7 @@
       <a onclick="openModal('findId')">아이디 찾기</a>
       <span>|</span>
       <a onclick="openModal('findPw')">비밀번호 찾기</a>
-    </div>
-
-    <div class="change-pw-link">
+      <span>|</span>
       <a onclick="document.getElementById('pwModal').classList.add('open')">비밀번호 변경</a>
     </div>
 
