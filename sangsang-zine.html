@@ -120,9 +120,51 @@
     .load-more-btn:hover { background: var(--color-green); color: #fff; }
     .load-more-btn:disabled { opacity: 0.5; cursor: default; }
 
+    /* ── Controls Bar ── */
+    .controls-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 24px 60px 0;
+    }
+    .sort-btns { display: flex; gap: 8px; }
+    .sort-btn {
+      padding: 8px 18px;
+      border: 1.5px solid #ddd;
+      border-radius: 999px;
+      background: #fff;
+      font-family: var(--font-main);
+      font-size: 14px;
+      font-weight: 600;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sort-btn.active { border-color: var(--color-green); color: var(--color-green); background: #f0f8e4; }
+    .sort-btn:hover:not(.active) { border-color: #bbb; color: #555; }
+
+    .month-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+    .month-chip {
+      padding: 8px 16px;
+      border: 1.5px solid #ddd;
+      border-radius: 999px;
+      background: #fff;
+      font-family: var(--font-main);
+      font-size: 13px;
+      font-weight: 600;
+      color: #888;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .month-chip.active { border-color: var(--color-green); color: #fff; background: var(--color-green); }
+    .month-chip:hover:not(.active) { border-color: #bbb; color: #555; }
+
     /* ── Responsive ── */
-    @media (max-width: 1024px) { .post-grid { grid-template-columns: repeat(2, 1fr); } .zine-section { padding: 48px 40px 64px; } }
-    @media (max-width: 640px) { .post-grid { grid-template-columns: 1fr; gap: 24px; } .zine-section { padding: 32px 20px 56px; } .zine-section__title { font-size: 32px; } }
+    @media (max-width: 1024px) { .post-grid { grid-template-columns: repeat(2, 1fr); } .zine-section { padding: 48px 40px 64px; } .controls-bar { padding: 20px 40px 0; } }
+    @media (max-width: 640px) { .post-grid { grid-template-columns: 1fr; gap: 24px; } .zine-section { padding: 32px 20px 56px; } .zine-section__title { font-size: 32px; } .controls-bar { padding: 16px 20px 0; flex-direction: column; align-items: flex-start; } }
 
     /* ── Footer ── */
     .footer { width: 100%; min-height: 237px; background: var(--color-footer-bg); display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 36px 0 0; }
@@ -175,6 +217,15 @@
     <button class="pb-btn pb-btn--prev" id="pbPrev" aria-label="이전" style="display:none;">&#8249;</button>
     <button class="pb-btn pb-btn--next" id="pbNext" aria-label="다음" style="display:none;">&#8250;</button>
     <div class="pb-dots" id="pbDots" style="display:none;"></div>
+  </div>
+
+  <!-- ══ Controls Bar ══ -->
+  <div class="controls-bar">
+    <div class="sort-btns">
+      <button class="sort-btn active" id="sortDesc" onclick="setSort('desc')">최신순</button>
+      <button class="sort-btn"        id="sortAsc"  onclick="setSort('asc')">등록순</button>
+    </div>
+    <div class="month-filters" id="monthFilters"></div>
   </div>
 
   <!-- ══ Zine Section ══ -->
@@ -279,25 +330,30 @@
     const WP_BASE = window.location.origin + '/wp-json/wp/v2';
     const PER_PAGE = 9;
     let currentPage = 1;
-    let totalPages = 1;
+    let totalPages  = 1;
+    let sortOrder   = 'desc';   // 'desc' = 최신순, 'asc' = 등록순
+    let selectedMonth = null;   // 'YYYY-MM' 형식, null = 전체
 
+    // ── 날짜 포맷 ──────────────────────────────────────────────
     function formatDate(dateStr) {
       const d = new Date(dateStr);
       return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    function getIssueLabel(dateStr) {
+      const d = new Date(dateStr);
+      return `${d.getFullYear()}년 ${d.getMonth()+1}월호`;
+    }
+
+    function getYearMonth(dateStr) {
+      const d = new Date(dateStr);
+      return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
     }
 
     function stripHtml(html) {
       const tmp = document.createElement('div');
       tmp.innerHTML = html;
       return tmp.textContent || tmp.innerText || '';
-    }
-
-    function getCategoryName(post) {
-      try {
-        const terms = post._embedded?.['wp:term'];
-        if (terms && terms[0] && terms[0].length > 0) return terms[0][0].name;
-      } catch(e) {}
-      return '상상ZINE';
     }
 
     function getThumbnailUrl(post) {
@@ -309,24 +365,23 @@
     }
 
     function buildCard(post) {
-      const title = post.title?.rendered || '(제목 없음)';
-      const excerpt = stripHtml(post.excerpt?.rendered || '').trim();
-      const date = formatDate(post.date);
-      const link = post.link || '#';
-      const category = getCategoryName(post);
+      const title    = post.title?.rendered || '(제목 없음)';
+      const excerpt  = stripHtml(post.excerpt?.rendered || '').trim();
+      const date     = formatDate(post.date);
+      const issue    = getIssueLabel(post.date);
       const thumbUrl = getThumbnailUrl(post);
+      const detailLink = `zine-magazine.html?id=${post.id}`;
 
       const thumbHtml = thumbUrl
         ? `<img src="${thumbUrl}" alt="${title}" loading="lazy" />`
         : `<div class="post-card__thumb-placeholder">📖</div>`;
 
-      const detailLink = `zine-magazine.html?id=${post.id}`;
       return `
         <a class="post-card" href="${detailLink}">
           <div class="post-card__thumb">${thumbHtml}</div>
           <div class="post-card__body">
             <div class="post-card__meta">
-              <span class="post-card__category">${category}</span>
+              <span class="post-card__category">${issue}</span>
               <span class="post-card__date">${date}</span>
             </div>
             <h2 class="post-card__title">${title}</h2>
@@ -352,35 +407,81 @@
         </div>`;
     }
 
-    // 일반 글(매거진)만 표시. 배너/공연은 별도 커스텀 포스트 타입이라 자동 분리됨
+    // ── API 호출 ──────────────────────────────────────────────
     async function fetchPosts(page = 1) {
-      const res = await fetch(
-        `${WP_BASE}/posts?per_page=${PER_PAGE}&page=${page}&_embed&status=publish`,
-        { cache: 'no-store' }
-      );
+      let url = `${WP_BASE}/posts?per_page=${PER_PAGE}&page=${page}&_embed&status=publish&orderby=date&order=${sortOrder}`;
+
+      if (selectedMonth) {
+        const [y, m] = selectedMonth.split('-');
+        const lastDay = new Date(y, m, 0).getDate();
+        url += `&after=${y}-${m}-01T00:00:00&before=${y}-${m}-${lastDay}T23:59:59`;
+      }
+
+      const res = await fetch(url, { cache: 'no-store' });
       if (!res.ok) throw new Error('fetch failed');
       totalPages = parseInt(res.headers.get('X-WP-TotalPages') || '1', 10);
       return res.json();
     }
 
+    // 월호 필터 칩 생성 (전체 포스트 날짜에서 추출)
+    async function buildMonthFilters() {
+      try {
+        const res = await fetch(`${WP_BASE}/posts?per_page=100&status=publish&_fields=date`, { cache: 'no-store' });
+        if (!res.ok) return;
+        const posts = await res.json();
+
+        // 중복 제거 후 정렬 (최신 → 오래된 순)
+        const months = [...new Set(posts.map(p => getYearMonth(p.date)))].sort((a,b) => b.localeCompare(a));
+        if (months.length === 0) return;
+
+        const container = document.getElementById('monthFilters');
+        const allChip = `<button class="month-chip active" data-month="" onclick="setMonth('')">전체</button>`;
+        const chips = months.map(m => {
+          const [y, mo] = m.split('-');
+          return `<button class="month-chip" data-month="${m}" onclick="setMonth('${m}')">${y}년 ${parseInt(mo)}월호</button>`;
+        }).join('');
+        container.innerHTML = allChip + chips;
+      } catch(e) {}
+    }
+
+    // ── 정렬 변경 ─────────────────────────────────────────────
+    function setSort(order) {
+      if (sortOrder === order) return;
+      sortOrder = order;
+      document.getElementById('sortDesc').classList.toggle('active', order === 'desc');
+      document.getElementById('sortAsc').classList.toggle('active',  order === 'asc');
+      resetAndLoad();
+    }
+
+    // ── 월호 필터 변경 ────────────────────────────────────────
+    function setMonth(month) {
+      selectedMonth = month || null;
+      document.querySelectorAll('.month-chip').forEach(chip => {
+        chip.classList.toggle('active', chip.dataset.month === (month || ''));
+      });
+      resetAndLoad();
+    }
+
+    // ── 초기화 후 재로딩 ──────────────────────────────────────
+    function resetAndLoad() {
+      currentPage = 1;
+      totalPages  = 1;
+      document.getElementById('loadMoreWrap').style.display = 'none';
+      document.getElementById('postGrid').innerHTML = `
+        <div class="skeleton-card"><div class="skeleton skeleton-thumb"></div><div class="skeleton-body"><div class="skeleton skeleton-line sm"></div><div class="skeleton skeleton-line md"></div><div class="skeleton skeleton-line lg"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-thumb"></div><div class="skeleton-body"><div class="skeleton skeleton-line sm"></div><div class="skeleton skeleton-line md"></div><div class="skeleton skeleton-line lg"></div></div></div>
+        <div class="skeleton-card"><div class="skeleton skeleton-thumb"></div><div class="skeleton-body"><div class="skeleton skeleton-line sm"></div><div class="skeleton skeleton-line md"></div><div class="skeleton skeleton-line lg"></div></div></div>`;
+      loadPosts();
+    }
+
     async function loadPosts() {
       try {
         const posts = await fetchPosts(1);
-        const grid = document.getElementById('postGrid');
-
-        if (!posts || posts.length === 0) {
-          showEmpty();
-          return;
-        }
-
+        const grid  = document.getElementById('postGrid');
+        if (!posts || posts.length === 0) { showEmpty(); return; }
         grid.innerHTML = posts.map(buildCard).join('');
-
-        if (totalPages > 1) {
-          document.getElementById('loadMoreWrap').style.display = 'block';
-        }
-      } catch(e) {
-        showError();
-      }
+        document.getElementById('loadMoreWrap').style.display = totalPages > 1 ? 'block' : 'none';
+      } catch(e) { showError(); }
     }
 
     async function loadMore() {
@@ -388,12 +489,9 @@
       btn.disabled = true;
       btn.textContent = '불러오는 중…';
       currentPage++;
-
       try {
         const posts = await fetchPosts(currentPage);
-        const grid = document.getElementById('postGrid');
-        grid.insertAdjacentHTML('beforeend', posts.map(buildCard).join(''));
-
+        document.getElementById('postGrid').insertAdjacentHTML('beforeend', posts.map(buildCard).join(''));
         if (currentPage >= totalPages) {
           document.getElementById('loadMoreWrap').style.display = 'none';
         } else {
@@ -406,6 +504,7 @@
       }
     }
 
+    buildMonthFilters();
     loadPosts();
 
     // ── 페이지 배너 Swiper (WordPress "zine-banner" 카테고리) ──
