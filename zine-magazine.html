@@ -457,7 +457,18 @@
           let list = JSON.parse(localStorage.getItem('ss_recent_zines') || '[]');
           list = list.filter(z => z.id !== id);
           list.unshift(zineItem);
-          localStorage.setItem('ss_recent_zines', JSON.stringify(list.slice(0, 10)));
+          const updated = list.slice(0, 10);
+          localStorage.setItem('ss_recent_zines', JSON.stringify(updated));
+          // 서버 동기화
+          const u = JSON.parse(localStorage.getItem('ss_user') || '{}');
+          const pw = localStorage.getItem('ss_pw');
+          if (u.username && pw) {
+            fetch(window.location.origin + '/wp-json/sangsang/v1/user-activity', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username: u.username, password: pw, ss_recent_zines: updated })
+            });
+          }
         } catch (e) {}
 
       } catch (e) {

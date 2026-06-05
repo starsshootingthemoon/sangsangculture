@@ -338,8 +338,23 @@
     loadConcert();
 
     // ── 활동 기록 유틸 ──────────────────────────────────────────
+    const SS_API = window.location.origin + '/wp-json/sangsang/v1';
     function getList(key) { try { return JSON.parse(localStorage.getItem(key)) || []; } catch { return []; } }
-    function saveList(key, arr) { localStorage.setItem(key, JSON.stringify(arr)); }
+    function saveList(key, arr) {
+      localStorage.setItem(key, JSON.stringify(arr));
+      // 서버 동기화 (fire-and-forget)
+      try {
+        const user = JSON.parse(localStorage.getItem('ss_user') || '{}');
+        const pw   = localStorage.getItem('ss_pw');
+        if (user.username && pw) {
+          fetch(SS_API + '/user-activity', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: user.username, password: pw, [key]: arr })
+          });
+        }
+      } catch(e) {}
+    }
 
     // 최근 본 공연 저장
     function saveRecentConcert(concert) {

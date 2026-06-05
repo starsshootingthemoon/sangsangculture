@@ -723,10 +723,32 @@
       }
     }
 
-    renderSlide('recentConcerts', getList('ss_recent_concerts'), concertItemHTML);
-    renderSlide('likedConcerts',  getList('ss_liked_concerts'),  concertItemHTML);
-    renderSlide('bookedConcerts', getList('ss_booked_concerts'), concertItemHTML);
-    renderSlide('recentZines',    getList('ss_recent_zines'),    zineItemHTML);
+    // 서버에서 활동 데이터 불러온 후 렌더링
+    (async function loadActivity() {
+      try {
+        const user = JSON.parse(localStorage.getItem('ss_user') || '{}');
+        const pw   = localStorage.getItem('ss_pw');
+        if (user.username && pw) {
+          const res = await fetch(
+            `${window.location.origin}/wp-json/sangsang/v1/user-activity?username=${encodeURIComponent(user.username)}&password=${encodeURIComponent(pw)}`
+          );
+          if (res.ok) {
+            const data = await res.json();
+            const keys = ['ss_recent_concerts', 'ss_liked_concerts', 'ss_booked_concerts', 'ss_recent_zines'];
+            keys.forEach(key => {
+              if (data[key] && data[key].length > 0) {
+                localStorage.setItem(key, JSON.stringify(data[key]));
+              }
+            });
+          }
+        }
+      } catch(e) {}
+
+      renderSlide('recentConcerts', getList('ss_recent_concerts'), concertItemHTML);
+      renderSlide('likedConcerts',  getList('ss_liked_concerts'),  concertItemHTML);
+      renderSlide('bookedConcerts', getList('ss_booked_concerts'), concertItemHTML);
+      renderSlide('recentZines',    getList('ss_recent_zines'),    zineItemHTML);
+    })();
 
     // 내가 쓴 댓글 불러오기
     (async function loadMyComments() {
