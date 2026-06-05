@@ -728,8 +728,8 @@
     async function loadHeroBanners() {
       const wrapper = document.getElementById('heroSwiperWrapper');
       try {
-        // hero-banner 카테고리에서 포스트 가져오기 (카테고리명으로 필터)
-        const res = await fetch(`${WP_API_BASE}/posts?categories=hero-banner&per_page=10&_embed&orderby=date&order=desc`);
+        // hero-banner 카테고리(ID:5)에서 포스트 가져오기
+        const res = await fetch(`${WP_API_BASE}/posts?categories=5&per_page=10&_embed&orderby=date&order=desc`);
         const posts = await res.json();
         if (!posts || posts.length === 0) throw new Error('no posts');
         wrapper.innerHTML = posts.map(buildHeroSlide).join('');
