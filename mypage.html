@@ -725,7 +725,7 @@
 
     // 깨진 데이터 감지 (uc0c1 같은 유니코드 이스케이프 패턴)
     function isGarbled(str) {
-      return typeof str === 'string' && /^[0-9a-f]{4,}/.test(str);
+      return typeof str === 'string' && /^(u[0-9a-f]{4}){2,}/.test(str);
     }
     function cleanList(list) {
       if (!Array.isArray(list)) return [];
