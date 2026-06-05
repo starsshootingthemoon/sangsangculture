@@ -725,6 +725,7 @@
 
     // 서버에서 활동 데이터 불러온 후 렌더링
     (async function loadActivity() {
+      const KEYS = ['ss_recent_concerts', 'ss_liked_concerts', 'ss_booked_concerts', 'ss_recent_zines'];
       try {
         const user = JSON.parse(localStorage.getItem('ss_user') || '{}');
         const pw   = localStorage.getItem('ss_pw');
@@ -733,13 +734,32 @@
             `${window.location.origin}/wp-json/sangsang/v1/user-activity?username=${encodeURIComponent(user.username)}&password=${encodeURIComponent(pw)}`
           );
           if (res.ok) {
-            const data = await res.json();
-            const keys = ['ss_recent_concerts', 'ss_liked_concerts', 'ss_booked_concerts', 'ss_recent_zines'];
-            keys.forEach(key => {
-              if (data[key] && data[key].length > 0) {
-                localStorage.setItem(key, JSON.stringify(data[key]));
+            const serverData = await res.json();
+            const upload = {};
+            let needUpload = false;
+
+            KEYS.forEach(key => {
+              const serverList = serverData[key] || [];
+              const localList  = getList(key);
+
+              if (serverList.length > 0) {
+                // 서버 데이터가 있으면 서버 우선
+                localStorage.setItem(key, JSON.stringify(serverList));
+              } else if (localList.length > 0) {
+                // 서버는 비어있는데 로컬에 데이터 있으면 서버로 업로드
+                upload[key] = localList;
+                needUpload = true;
               }
             });
+
+            // 기존 로컬 데이터 서버에 업로드
+            if (needUpload) {
+              fetch(`${window.location.origin}/wp-json/sangsang/v1/user-activity`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: user.username, password: pw, ...upload })
+              });
+            }
           }
         }
       } catch(e) {}
