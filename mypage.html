@@ -723,9 +723,28 @@
       }
     }
 
+    // 깨진 데이터 감지 (uc0c1 같은 유니코드 이스케이프 패턴)
+    function isGarbled(str) {
+      return typeof str === 'string' && /^[0-9a-f]{4,}/.test(str);
+    }
+    function cleanList(list) {
+      if (!Array.isArray(list)) return [];
+      return list.filter(item => item && !isGarbled(item.title || '') && !isGarbled(item.url || ''));
+    }
+
     // 서버에서 활동 데이터 불러온 후 렌더링
     (async function loadActivity() {
       const KEYS = ['ss_recent_concerts', 'ss_liked_concerts', 'ss_booked_concerts', 'ss_recent_zines'];
+
+      // 로컬 깨진 데이터 먼저 정리
+      KEYS.forEach(key => {
+        const local = getList(key);
+        const clean = cleanList(local);
+        if (clean.length !== local.length) {
+          localStorage.setItem(key, JSON.stringify(clean));
+        }
+      });
+
       try {
         const user = JSON.parse(localStorage.getItem('ss_user') || '{}');
         const pw   = localStorage.getItem('ss_pw');
@@ -739,20 +758,17 @@
             let needUpload = false;
 
             KEYS.forEach(key => {
-              const serverList = serverData[key] || [];
-              const localList  = getList(key);
+              const serverList = cleanList(serverData[key] || []);
+              const localList  = cleanList(getList(key));
 
               if (serverList.length > 0) {
-                // 서버 데이터가 있으면 서버 우선
                 localStorage.setItem(key, JSON.stringify(serverList));
               } else if (localList.length > 0) {
-                // 서버는 비어있는데 로컬에 데이터 있으면 서버로 업로드
                 upload[key] = localList;
                 needUpload = true;
               }
             });
 
-            // 기존 로컬 데이터 서버에 업로드
             if (needUpload) {
               fetch(`${window.location.origin}/wp-json/sangsang/v1/user-activity`, {
                 method: 'POST',
