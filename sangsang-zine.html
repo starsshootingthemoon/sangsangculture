@@ -47,6 +47,16 @@
     .page-title { font-family: var(--font-display); font-size: 44px; color: var(--color-green); line-height: 1.1; margin-bottom: 6px; }
     .page-subtitle { font-size: 16px; color: #9FA0A0; font-weight: 400; }
 
+    /* ── Hero Section ── */
+    .hero { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--color-border); }
+    .hero-item { padding: 2rem 2rem; cursor: pointer; border-right: 1px solid var(--color-border); transition: background 0.15s; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 12px; background: none; border: none; font-family: var(--font-main); text-align: left; }
+    .hero-item:last-child { border-right: none; }
+    .hero-item:hover { background: #f8fdf0; }
+    .hero-tag { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-text-ter); font-weight: 600; }
+    .hero-title { font-size: 20px; font-weight: 600; line-height: 1.35; color: var(--color-dark); font-family: var(--font-display); }
+    .hero-sub { font-size: 14px; color: var(--color-text-sec); line-height: 1.6; }
+    .hero-link { display: inline-block; margin-top: 8px; font-size: 13px; color: var(--color-green); font-weight: 600; letter-spacing: 0.04em; }
+
     /* ── Main Content ── */
     .main-wrap { flex: 1; display: grid; grid-template-columns: 180px 1fr; min-height: 600px; }
 
@@ -157,6 +167,22 @@
 <div class="page-header">
   <h1 class="page-title">상상ZINE</h1>
   <p class="page-subtitle">최신 글과 저자들을 만나보세요</p>
+</div>
+
+<!-- ══ Hero Section ══ -->
+<div class="hero">
+  <button class="hero-item" onclick="openHero('시론','새로운 계절의 질문','우리가 당연하다고 여겨온 것들을 다시 질문하는 시간. 이 계절의 시작점에 서서, 우리는 무엇을 묻고 있는가.')">
+    <div class="hero-tag">시론</div>
+    <div class="hero-title">새로운 계절의 질문</div>
+    <div class="hero-sub">우리가 당연하다고 여겨온 것들을 다시 질문합니다.</div>
+    <div class="hero-link">읽으러 가기 →</div>
+  </button>
+  <button class="hero-item" onclick="openHero('포커스','지금 여기, 현장의 목소리','현장에서 직접 만난 사람들의 이야기를 담았습니다. 숫자 뒤에 가려진 얼굴들, 정책 아래 숨겨진 삶의 결들을 따라갑니다.')">
+    <div class="hero-tag">포커스</div>
+    <div class="hero-title">지금 여기, 현장의 목소리</div>
+    <div class="hero-sub">현장에서 직접 만난 사람들의 이야기를 담았습니다.</div>
+    <div class="hero-link">읽으러 가기 →</div>
+  </button>
 </div>
 
 <!-- ══ Main Content ══ -->
@@ -331,6 +357,21 @@ function openPost(author, title, excerpt, date) {
       <h2 class="post-detail-title">${title}</h2>
     </div>
     <div class="post-detail-body">${excerpt}</div>
+    <div class="post-placeholder">※ 실제 글 본문이 이 자리에 들어갑니다.</div>`;
+}
+
+function openHero(tag, title, body) {
+  hideAll();
+  document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+  const dv = document.getElementById('post-detail');
+  dv.classList.add('visible');
+  dv.innerHTML = `
+    <button class="back-btn" onclick="goHome()">← 전체 목록</button>
+    <div class="post-detail-header">
+      <div class="post-detail-meta">${tag}</div>
+      <h2 class="post-detail-title">${title}</h2>
+    </div>
+    <div class="post-detail-body">${body}</div>
     <div class="post-placeholder">※ 실제 글 본문이 이 자리에 들어갑니다.</div>`;
 }
 
