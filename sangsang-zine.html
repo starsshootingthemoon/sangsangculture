@@ -263,11 +263,60 @@ let allPosts = [];
 
 async function loadPosts() {
   try {
-    const res = await fetch(`${API_BASE}/posts?per_page=100&_embed`);
+    const res = await fetch(`${API_BASE}/posts?per_page=100&_embed&_fields=id,title,excerpt,date,_links,featured_media,_embedded`);
     allPosts = await res.json();
     renderCards();
+    loadHeroSection();
   } catch (e) {
     console.error('Failed to load posts:', e);
+  }
+}
+
+async function loadHeroSection() {
+  try {
+    // 시론, 포커스 카테고리 ID 확인 및 글 로드
+    const categories = await fetch(`${API_BASE}/categories?slug=siron,focus&_fields=id,slug`).then(r => r.json());
+
+    let heroHTML = '';
+
+    // 시론 찾기
+    const sironCat = categories.find(c => c.slug === 'siron');
+    if (sironCat) {
+      const sironPosts = await fetch(`${API_BASE}/posts?categories=${sironCat.id}&per_page=1&_embed`).then(r => r.json());
+      if (sironPosts.length > 0) {
+        const p = sironPosts[0];
+        const excerpt = p.excerpt.rendered.replace(/<[^>]+>/g, '').slice(0, 80);
+        heroHTML += `<button class="hero-item" onclick="goToPost(${p.id})">
+          <div class="hero-tag">시론</div>
+          <div class="hero-title">${p.title.rendered}</div>
+          <div class="hero-sub">${excerpt}</div>
+          <div class="hero-link">읽으러 가기 →</div>
+        </button>`;
+      }
+    }
+
+    // 포커스 찾기
+    const focusCat = categories.find(c => c.slug === 'focus');
+    if (focusCat) {
+      const focusPosts = await fetch(`${API_BASE}/posts?categories=${focusCat.id}&per_page=1&_embed`).then(r => r.json());
+      if (focusPosts.length > 0) {
+        const p = focusPosts[0];
+        const excerpt = p.excerpt.rendered.replace(/<[^>]+>/g, '').slice(0, 80);
+        heroHTML += `<button class="hero-item" onclick="goToPost(${p.id})">
+          <div class="hero-tag">포커스</div>
+          <div class="hero-title">${p.title.rendered}</div>
+          <div class="hero-sub">${excerpt}</div>
+          <div class="hero-link">읽으러 가기 →</div>
+        </button>`;
+      }
+    }
+
+    if (heroHTML) {
+      const heroEl = document.querySelector('.hero');
+      heroEl.innerHTML = heroHTML;
+    }
+  } catch (e) {
+    console.error('Failed to load hero section:', e);
   }
 }
 
@@ -325,6 +374,10 @@ function showAuthor(id) {
 
   const dv = document.getElementById('author-detail');
   dv.classList.add('visible');
+
+  // 모든 저자의 글 표시 (실제로는 WordPress author로 필터링 가능)
+  const authorPosts = allPosts.slice(0, 10);
+
   dv.innerHTML = `
     <button class="back-btn" onclick="goHome()">← 전체 목록</button>
     <div class="detail-header">
@@ -335,7 +388,7 @@ function showAuthor(id) {
       </div>
     </div>
     <div class="posts-label">작성 글</div>
-    ${allPosts.slice(0, 10).map((p, i) => {
+    ${authorPosts.length > 0 ? authorPosts.map((p, i) => {
       const date = new Date(p.date).toLocaleDateString('ko-KR');
       const title = p.title.rendered;
       const excerpt = p.excerpt.rendered.replace(/<[^>]+>/g, '').slice(0, 60);
@@ -343,7 +396,7 @@ function showAuthor(id) {
         <div class="post-date">${date}</div>
         <div><div class="post-title">${title}</div><div class="post-excerpt">${excerpt}</div></div>
       </div>`;
-    }).join('')}`;
+    }).join('') : '<div style="padding:20px;color:#aaa;text-align:center;">글이 없습니다</div>'}`;
 }
 
 function goToPost(postId) {
