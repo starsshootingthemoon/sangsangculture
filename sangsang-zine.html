@@ -251,21 +251,34 @@
 <script>
 const API_BASE = window.location.origin + '/wp-json/wp/v2';
 
-// 임시 저자 데이터 (WordPress에서 로드할 때까지)
-const AUTHORS = [
-  { id: 1, name: "김서연", color: "#95B658", bg: "#EAF3DE", num: "01" },
-  { id: 2, name: "박준혁", color: "#0C447C", bg: "#E6F1FB", num: "02" },
-  { id: 3, name: "이하늘", color: "#712B13", bg: "#FAECE7", num: "03" },
-  { id: 4, name: "최단비", color: "#3C3489", bg: "#EEEDFE", num: "04" }
-];
-
 let allPosts = [];
+let dynamicAuthors = [];
 
 async function loadPosts() {
   try {
     const res = await fetch(`${API_BASE}/posts?per_page=100&_embed`);
     allPosts = await res.json();
+
+    // WordPress 글에서 저자 리스트 동적 생성
+    const authorSet = new Set();
+    allPosts.forEach(p => {
+      const author = p.zine_author || '상상문화';
+      if (author) authorSet.add(author);
+    });
+
+    dynamicAuthors = Array.from(authorSet).map((name, idx) => {
+      const colors = getAuthorColor(name);
+      return {
+        id: idx,
+        name: name,
+        color: colors.color,
+        bg: colors.bg,
+        num: colors.num
+      };
+    });
+
     renderCards();
+    buildSidebar();
     loadHeroSection();
   } catch (e) {
     console.error('Failed to load posts:', e);
@@ -379,9 +392,10 @@ function renderCards() {
 
 function buildSidebar() {
   const ul = document.getElementById('sidebar-list');
-  AUTHORS.forEach((a, i) => {
+  ul.innerHTML = '';
+  dynamicAuthors.forEach((a) => {
     const li = document.createElement('li');
-    li.innerHTML = `<button class="sidebar-item" id="sb-${a.id}" onclick="showAuthor(${a.id})">
+    li.innerHTML = `<button class="sidebar-item" id="sb-${a.name}" onclick="showAuthor('${a.name}')">
       <span class="s-name">${a.name}</span>
       <span class="s-date">최근 글</span>
     </button>`;
@@ -389,26 +403,25 @@ function buildSidebar() {
   });
 }
 
-function showAuthor(id) {
-  const author = AUTHORS.find(a => a.id === id);
-  const authorColors = getAuthorColor(author.name);
+function showAuthor(authorName) {
+  const authorColors = getAuthorColor(authorName);
 
   hideAll();
   document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
-  document.getElementById('sb-' + id).classList.add('active');
+  document.getElementById('sb-' + authorName).classList.add('active');
 
   const dv = document.getElementById('author-detail');
   dv.classList.add('visible');
 
   // 해당 저자의 글만 필터링
-  const authorPosts = allPosts.filter(p => (p.zine_author || '상상문화') === author.name);
+  const authorPosts = allPosts.filter(p => (p.zine_author || '상상문화') === authorName);
 
   dv.innerHTML = `
     <button class="back-btn" onclick="goHome()">← 전체 목록</button>
     <div class="detail-header">
-      <div class="detail-avatar" style="background:${authorColors.color}">${author.name.slice(0,2)}</div>
+      <div class="detail-avatar" style="background:${authorColors.color}">${authorName.slice(0,2)}</div>
       <div>
-        <div class="detail-name">${author.name}</div>
+        <div class="detail-name">${authorName}</div>
         <div class="detail-count">총 ${authorPosts.length}편</div>
       </div>
     </div>
