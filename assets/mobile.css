@@ -107,26 +107,9 @@
 
 
 /* ══════════════════════════════════════════════
-   TABLET: 768px < width ≤ 1024px
+   TABLET + MOBILE: ≤ 1024px
 ══════════════════════════════════════════════ */
-@media (max-width: 1024px) and (min-width: 769px) {
-
-  /* ── Navbar ── */
-  .navbar { height: 100px !important; padding: 0 24px !important; grid-template-columns: 180px 1fr 180px; }
-  .navbar__logo-img { width: 64px !important; height: 46px !important; }
-  .navbar__logo-text { font-size: 14px !important; }
-  .navbar__menu { display: flex !important; gap: 0 !important; }
-  .navbar__menu li { padding: 0 10px !important; }
-  .navbar__menu a { font-size: 13px !important; padding-bottom: 6px !important; }
-  .navbar__auth { display: flex !important; gap: 8px !important; font-size: 13px !important; }
-  .navbar__hamburger { display: none !important; }
-}
-
-
-/* ══════════════════════════════════════════════
-   TABLET + MOBILE: ≤ 1024px (모바일 전용 설정)
-══════════════════════════════════════════════ */
-@media (max-width: 768px) {
+@media (max-width: 1024px) {
 
   /* ── Navbar ── */
   .navbar { height: 80px !important; padding: 0 24px !important; position: relative !important; }
