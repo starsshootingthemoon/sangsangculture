@@ -439,10 +439,10 @@
         // 본문 (갤러리 제거된 상태) — 본문 내 이미지는 그대로 흐름대로 표시
         document.getElementById('articleContent').innerHTML = cleanedContent;
 
-        // 작성자
+        // 작성자 (zine_author 우선)
         try {
-          const author = post._embedded?.author?.[0]?.name;
-          if (author) document.getElementById('articleAuthor').textContent = author;
+          const author = post.zine_author || post._embedded?.author?.[0]?.name || '상상문화';
+          document.getElementById('articleAuthor').textContent = author;
         } catch (e) {}
 
         // 최근 본 ZINE 기록
