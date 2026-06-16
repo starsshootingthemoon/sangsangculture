@@ -286,7 +286,7 @@ function renderCards() {
 
     const card = document.createElement('button');
     card.className = 'author-card';
-    card.onclick = () => openPost(author.name, post.title.rendered, excerpt, date);
+    card.onclick = () => goToPost(post.id);
     card.innerHTML = `
       <div class="card-thumb" style="background:${author.bg}">
         <span class="card-num">${author.num}</span>
@@ -317,7 +317,7 @@ function buildSidebar() {
   });
 }
 
-function showAuthor(id, postId) {
+function showAuthor(id) {
   const author = AUTHORS.find(a => a.id === id);
   hideAll();
   document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
@@ -335,15 +335,19 @@ function showAuthor(id, postId) {
       </div>
     </div>
     <div class="posts-label">작성 글</div>
-    ${allPosts.slice(0, 3).map((p, i) => {
+    ${allPosts.slice(0, 10).map((p, i) => {
       const date = new Date(p.date).toLocaleDateString('ko-KR');
       const title = p.title.rendered;
       const excerpt = p.excerpt.rendered.replace(/<[^>]+>/g, '').slice(0, 60);
-      return `<div class="post-row" onclick="openPost('${author.name}','${title.replace(/'/g, "\\'")}','${excerpt.replace(/'/g, "\\'")}','${date}')">
+      return `<div class="post-row" onclick="goToPost(${p.id})">
         <div class="post-date">${date}</div>
         <div><div class="post-title">${title}</div><div class="post-excerpt">${excerpt}</div></div>
       </div>`;
     }).join('')}`;
+}
+
+function goToPost(postId) {
+  window.location.href = `zine-magazine.html?id=${postId}`;
 }
 
 function openPost(author, title, excerpt, date) {
