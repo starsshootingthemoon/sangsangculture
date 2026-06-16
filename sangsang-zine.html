@@ -263,13 +263,23 @@ let allPosts = [];
 
 async function loadPosts() {
   try {
-    const res = await fetch(`${API_BASE}/posts?per_page=100&_embed&_fields=id,title,excerpt,date,_links,featured_media,_embedded`);
+    const res = await fetch(`${API_BASE}/posts?per_page=100&_embed`);
     allPosts = await res.json();
     renderCards();
     loadHeroSection();
   } catch (e) {
     console.error('Failed to load posts:', e);
   }
+}
+
+function getAuthorColor(authorName) {
+  const colorMap = {
+    '김서연': { color: '#27500A', bg: '#EAF3DE', num: '01' },
+    '박준혁': { color: '#0C447C', bg: '#E6F1FB', num: '02' },
+    '이하늘': { color: '#712B13', bg: '#FAECE7', num: '03' },
+    '최단비': { color: '#3C3489', bg: '#EEEDFE', num: '04' },
+  };
+  return colorMap[authorName] || { color: '#95B658', bg: '#f0f0f0', num: '00' };
 }
 
 async function loadHeroSection() {
@@ -326,8 +336,9 @@ function renderCards() {
 
   const recentPosts = allPosts.slice(0, 4);
 
-  recentPosts.forEach((post, idx) => {
-    const author = AUTHORS[idx % AUTHORS.length];
+  recentPosts.forEach((post) => {
+    const authorName = post.zine_author || '상상문화';
+    const author = getAuthorColor(authorName);
     const date = new Date(post.date).toLocaleDateString('ko-KR');
     const thumb = post._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium?.source_url || '';
     const title = post.title.rendered.slice(0, 40);
@@ -343,8 +354,8 @@ function renderCards() {
       </div>
       <div class="card-body">
         <div class="card-author-row">
-          <div class="card-avatar" style="background:${author.color}">${author.name.slice(0,2)}</div>
-          <span class="card-author-name">${author.name}</span>
+          <div class="card-avatar" style="background:${author.color}">${authorName.slice(0,2)}</div>
+          <span class="card-author-name">${authorName}</span>
           <span class="card-date">${date}</span>
         </div>
         <div class="card-title">${title}</div>
@@ -368,6 +379,8 @@ function buildSidebar() {
 
 function showAuthor(id) {
   const author = AUTHORS.find(a => a.id === id);
+  const authorColors = getAuthorColor(author.name);
+
   hideAll();
   document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
   document.getElementById('sb-' + id).classList.add('active');
@@ -375,20 +388,20 @@ function showAuthor(id) {
   const dv = document.getElementById('author-detail');
   dv.classList.add('visible');
 
-  // 모든 저자의 글 표시 (실제로는 WordPress author로 필터링 가능)
-  const authorPosts = allPosts.slice(0, 10);
+  // 해당 저자의 글만 필터링
+  const authorPosts = allPosts.filter(p => (p.zine_author || '상상문화') === author.name);
 
   dv.innerHTML = `
     <button class="back-btn" onclick="goHome()">← 전체 목록</button>
     <div class="detail-header">
-      <div class="detail-avatar" style="background:${author.color}">${author.name.slice(0,2)}</div>
+      <div class="detail-avatar" style="background:${authorColors.color}">${author.name.slice(0,2)}</div>
       <div>
         <div class="detail-name">${author.name}</div>
-        <div class="detail-count">작가 페이지</div>
+        <div class="detail-count">총 ${authorPosts.length}편</div>
       </div>
     </div>
     <div class="posts-label">작성 글</div>
-    ${authorPosts.length > 0 ? authorPosts.map((p, i) => {
+    ${authorPosts.length > 0 ? authorPosts.map((p) => {
       const date = new Date(p.date).toLocaleDateString('ko-KR');
       const title = p.title.rendered;
       const excerpt = p.excerpt.rendered.replace(/<[^>]+>/g, '').slice(0, 60);
