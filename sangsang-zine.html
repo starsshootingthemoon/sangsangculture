@@ -282,10 +282,11 @@ function renderCards() {
     const date = new Date(post.date).toLocaleDateString('ko-KR');
     const thumb = post._embedded?.['wp:featuredmedia']?.[0]?.media_details?.sizes?.medium?.source_url || '';
     const title = post.title.rendered.slice(0, 40);
+    const excerpt = post.excerpt.rendered.replace(/<[^>]+>/g, '').slice(0, 80);
 
     const card = document.createElement('button');
     card.className = 'author-card';
-    card.onclick = () => showAuthor(author.id, post.id);
+    card.onclick = () => openPost(author.name, post.title.rendered, excerpt, date);
     card.innerHTML = `
       <div class="card-thumb" style="background:${author.bg}">
         <span class="card-num">${author.num}</span>
@@ -298,7 +299,7 @@ function renderCards() {
           <span class="card-date">${date}</span>
         </div>
         <div class="card-title">${title}</div>
-        <div class="card-excerpt">${post.excerpt.rendered.replace(/<[^>]+>/g, '').slice(0, 80)}</div>
+        <div class="card-excerpt">${excerpt}</div>
       </div>`;
     grid.appendChild(card);
   });
