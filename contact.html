@@ -135,6 +135,12 @@
     <!-- 광고 문의 폼 -->
     <div class="form-panel active" id="panel-ad">
       <form onsubmit="return submitInquiry(event, 'ad')">
+        <!-- 🛡️ 봇 차단 허니팟 (사람 눈에 안 보임) -->
+        <div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+          <label>웹사이트 (입력하지 마세요)
+            <input type="text" name="website" tabindex="-1" autocomplete="off" />
+          </label>
+        </div>
         <div class="form-field">
           <label>회사명 / 기관명 <span class="req">*</span></label>
           <input type="text" name="company" required maxlength="100" placeholder="예: 상상아이앤씨" />
@@ -176,6 +182,12 @@
     <!-- 제휴 문의 폼 -->
     <div class="form-panel" id="panel-partnership">
       <form onsubmit="return submitInquiry(event, 'partnership')">
+        <!-- 🛡️ 봇 차단 허니팟 (사람 눈에 안 보임) -->
+        <div style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;" aria-hidden="true">
+          <label>웹사이트 (입력하지 마세요)
+            <input type="text" name="website" tabindex="-1" autocomplete="off" />
+          </label>
+        </div>
         <div class="form-field">
           <label>회사명 / 기관명 <span class="req">*</span></label>
           <input type="text" name="company" required maxlength="100" />
@@ -267,6 +279,9 @@
   <script>
     const WP_API_BASE = window.location.origin + '/wp-json';
 
+    // 🛡️ 폼 열린 시간 기록 (너무 빨리 제출하면 봇으로 판단)
+    const FORM_OPEN_TIME = Date.now();
+
     // URL 파라미터로 탭 자동 선택
     (function() {
       const params = new URLSearchParams(window.location.search);
@@ -287,6 +302,7 @@
 
       const data = Object.fromEntries(new FormData(form));
       data.type = type === 'ad' ? '광고 문의' : '제휴 문의';
+      data.elapsed = Math.floor((Date.now() - FORM_OPEN_TIME) / 1000); // 폼 열고 제출까지 초
 
       btn.disabled = true;
       btn.textContent = '전송 중…';
