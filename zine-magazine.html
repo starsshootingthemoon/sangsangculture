@@ -104,6 +104,30 @@
     .article__content .wp-block-gallery figure { margin: 0; }
     .article__content .wp-block-gallery img { margin: 0; aspect-ratio: 1; object-fit: cover; }
 
+    /* ── Reactions (좋아요/싫어요) ── */
+    .reactions { max-width: 955px; margin: 0 auto; padding: 24px 40px 0; display: flex; gap: 14px; justify-content: center; }
+    .reaction-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      padding: 14px 32px; background: #fff;
+      border: 2px solid #e0e0e0; border-radius: 999px;
+      font-family: var(--font-main); font-weight: 700; font-size: 16px; color: #555;
+      cursor: pointer; transition: all 0.2s; user-select: none;
+    }
+    .reaction-btn:hover { border-color: #bbb; background: #fafafa; }
+    .reaction-btn:active { transform: scale(0.96); }
+    .reaction-btn__icon { font-size: 22px; line-height: 1; }
+    .reaction-btn__count { font-weight: 700; font-size: 15px; min-width: 16px; text-align: left; }
+
+    .reaction-btn--like.active { background: #f0f8e4; border-color: var(--color-green); color: var(--color-green); }
+    .reaction-btn--dislike.active { background: #fdecec; border-color: #d33; color: #d33; }
+
+    .reaction-btn:disabled { opacity: 0.6; cursor: default; }
+
+    @media (max-width: 640px) {
+      .reactions { padding: 16px 20px 0; }
+      .reaction-btn { padding: 10px 22px; font-size: 14px; }
+    }
+
     /* ── Comments ── */
     .comments-section { max-width: 955px; margin: 0 auto; padding: 40px 40px 80px; }
     .comments-section__title { font-family: var(--font-main); font-weight: 700; font-size: 22px; color: #000; margin-bottom: 24px; display: flex; align-items: center; gap: 10px; }
@@ -269,6 +293,20 @@
       </div>
     </div>
   </article>
+
+  <!-- ══ Reactions (좋아요/싫어요) ══ -->
+  <div class="reactions" id="reactionsBox" style="display:none;">
+    <button type="button" class="reaction-btn reaction-btn--like" id="likeBtn" onclick="toggleReaction('like')">
+      <span class="reaction-btn__icon">👍</span>
+      <span>좋아요</span>
+      <span class="reaction-btn__count" id="likeCount">0</span>
+    </button>
+    <button type="button" class="reaction-btn reaction-btn--dislike" id="dislikeBtn" onclick="toggleReaction('dislike')">
+      <span class="reaction-btn__icon">👎</span>
+      <span>싫어요</span>
+      <span class="reaction-btn__count" id="dislikeCount">0</span>
+    </button>
+  </div>
 
   <!-- ══ Comments ══ -->
   <section class="comments-section" id="commentsSection">
@@ -476,6 +514,73 @@
       }
     }
     loadArticle();
+
+    // ── 좋아요/싫어요 시스템 ──────────────────────────────────
+    let reactionPostId = null;
+    let userReaction = null; // 'like' | 'dislike' | null
+
+    async function loadReactions(postId) {
+      reactionPostId = postId;
+      // localStorage에서 이전 투표 기록 불러오기
+      userReaction = localStorage.getItem(`ss_reaction_${postId}`) || null;
+
+      try {
+        const res = await fetch(`${WP_API_BASE.replace('/wp/v2','')}/sangsang/v1/reaction/${postId}`, { cache: 'no-store' });
+        const data = await res.json();
+        document.getElementById('likeCount').textContent = data.likes || 0;
+        document.getElementById('dislikeCount').textContent = data.dislikes || 0;
+      } catch (e) {
+        document.getElementById('likeCount').textContent = 0;
+        document.getElementById('dislikeCount').textContent = 0;
+      }
+      updateReactionUI();
+      document.getElementById('reactionsBox').style.display = 'flex';
+    }
+
+    function updateReactionUI() {
+      document.getElementById('likeBtn').classList.toggle('active', userReaction === 'like');
+      document.getElementById('dislikeBtn').classList.toggle('active', userReaction === 'dislike');
+    }
+
+    async function toggleReaction(type) {
+      if (!reactionPostId) return;
+      const likeBtn = document.getElementById('likeBtn');
+      const dislikeBtn = document.getElementById('dislikeBtn');
+      likeBtn.disabled = true; dislikeBtn.disabled = true;
+
+      // 같은 버튼 다시 누르면 취소, 다른 버튼 누르면 변경
+      const newReaction = userReaction === type ? null : type;
+
+      try {
+        const res = await fetch(`${WP_API_BASE.replace('/wp/v2','')}/sangsang/v1/reaction`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            post_id: reactionPostId,
+            from: userReaction,   // 이전 반응 (취소용)
+            to: newReaction,      // 새 반응
+          }),
+        });
+        const data = await res.json();
+        if (!res.ok) throw new Error();
+
+        document.getElementById('likeCount').textContent = data.likes || 0;
+        document.getElementById('dislikeCount').textContent = data.dislikes || 0;
+
+        userReaction = newReaction;
+        if (newReaction) localStorage.setItem(`ss_reaction_${reactionPostId}`, newReaction);
+        else localStorage.removeItem(`ss_reaction_${reactionPostId}`);
+        updateReactionUI();
+      } catch (e) {
+        // 실패해도 UI는 그대로
+      } finally {
+        likeBtn.disabled = false; dislikeBtn.disabled = false;
+      }
+    }
+
+    // article 로드 시 reactions도 같이
+    const _pidR = getQueryParam('id');
+    if (_pidR) loadReactions(parseInt(_pidR, 10));
 
     // ── 댓글 시스템 ──────────────────────────────────────────
     let currentPostId = null;
