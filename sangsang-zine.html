@@ -47,10 +47,18 @@
     .page-title { font-family: var(--font-display); font-size: 44px; color: var(--color-green); line-height: 1.1; margin-bottom: 6px; }
     .page-subtitle { font-size: 16px; color: #9FA0A0; font-weight: 400; }
 
-    /* ── ZINE Banner ── */
-    .zine-banner { width: 100%; aspect-ratio: 1440 / 400; margin-top: 20px; overflow: hidden; background: #f5f5f5; }
-    .zine-banner .swiper-slide { width: 100%; height: 100%; }
-    .zine-banner .slide-bg { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+    /* ── WordPress 연동 Swiper Banner ── */
+    .swiper-wrapper { position: relative; width: 100%; aspect-ratio: 1440 / 400; margin-top: 20px; overflow: hidden; background: #f5f5f5; }
+    .swiper-track { display: flex; width: 100%; height: 100%; transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
+    .swiper-slide { flex: 0 0 100%; width: 100%; height: 100%; position: relative; overflow: hidden; }
+    .swiper-slide img.slide-bg { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+    .swiper-btn { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; width: 52px; height: 52px; background: rgba(255,255,255,0.18); border: 2px solid rgba(255,255,255,0.6); border-radius: 50%; color: #fff; font-size: 28px; line-height: 1; cursor: pointer; align-items: center; justify-content: center; transition: background 0.2s; backdrop-filter: blur(4px); }
+    .swiper-btn:hover { background: rgba(255,255,255,0.32); }
+    .swiper-btn--prev { left: 28px; }
+    .swiper-btn--next { right: 28px; }
+    .swiper-dots { position: absolute; bottom: 22px; left: 50%; transform: translateX(-50%); z-index: 10; gap: 10px; }
+    .swiper-dot { width: 10px; height: 10px; padding: 0; border: 2px solid #fff; border-radius: 50%; background: transparent; cursor: pointer; transition: background 0.2s; }
+    .swiper-dot.active { background: #fff; }
 
     /* ── Hero Section ── */
     .hero { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--color-border); margin-top: 40px; }
@@ -132,6 +140,10 @@
     @media (max-width: 768px) {
       .page-header { padding: 24px 20px 0; }
       .page-title { font-size: 28px; }
+      .swiper-btn { width: 40px; height: 40px; font-size: 22px; }
+      .swiper-btn--prev { left: 14px; }
+      .swiper-btn--next { right: 14px; }
+      .swiper-dots { bottom: 12px; }
       .main-wrap { grid-template-columns: 1fr; }
       .sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--color-border); }
       .sidebar-list { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 1.25rem 1rem; }
@@ -174,9 +186,12 @@
   <p class="page-subtitle">최신 글과 저자들을 만나보세요</p>
 </div>
 
-<!-- ══ ZINE Banner ══ -->
-<div class="zine-banner">
-  <div class="swiper-slide"><img class="slide-bg" src="https://sangsang153.com/wp-content/uploads/2026/05/banner1-img.png" alt="상상동행마당 홍보 배너 (예시 1)"></div>
+<!-- ══ WordPress 연동 Swiper Banner ══ -->
+<div class="swiper-wrapper" id="swiper">
+  <div class="swiper-track" id="swiperTrack"></div>
+  <button class="swiper-btn swiper-btn--prev" id="swiperPrev" aria-label="이전" style="display:none;">&#8249;</button>
+  <button class="swiper-btn swiper-btn--next" id="swiperNext" aria-label="다음" style="display:none;">&#8250;</button>
+  <div class="swiper-dots" id="swiperDots" style="display:none;"></div>
 </div>
 
 <!-- ══ Hero Section ══ -->
@@ -260,6 +275,95 @@
 <script src="assets/mobile.js"></script>
 <script>
 const API_BASE = window.location.origin + '/wp-json/wp/v2';
+
+let bannerCurrent = 0;
+let bannerTotal = 0;
+let bannerAutoTimer = null;
+
+function escapeBannerHtml(value) {
+  return (value || '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+}
+
+function stripBannerHtml(value) {
+  const el = document.createElement('div');
+  el.innerHTML = value || '';
+  return (el.textContent || el.innerText || '').trim();
+}
+
+function buildBannerSlide(post) {
+  const title = post.title?.rendered || '';
+  const excerpt = stripBannerHtml(post.excerpt?.rendered || '');
+  const link = excerpt.split('|').pop().trim();
+  const image = post.featured_image_url || post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '';
+  const isLink = link.startsWith('http') || link.endsWith('.html');
+  const isExternal = link.startsWith('http');
+  const imageHtml = image ? `<img class="slide-bg" src="${escapeBannerHtml(image)}" alt="${escapeBannerHtml(title)}" />` : '';
+
+  if (isLink) {
+    return `<a class="swiper-slide" href="${escapeBannerHtml(link)}" ${isExternal ? 'target="_blank" rel="noopener"' : ''}>${imageHtml}</a>`;
+  }
+  return `<div class="swiper-slide">${imageHtml}</div>`;
+}
+
+function setupBannerControls() {
+  const track = document.getElementById('swiperTrack');
+  const dots = document.querySelectorAll('#swiperDots .swiper-dot');
+  const prev = document.getElementById('swiperPrev');
+  const next = document.getElementById('swiperNext');
+
+  function goToBanner(index) {
+    bannerCurrent = (index + bannerTotal) % bannerTotal;
+    track.style.transform = `translateX(-${bannerCurrent * 100}%)`;
+    dots.forEach((dot, i) => dot.classList.toggle('active', i === bannerCurrent));
+  }
+
+  function startBannerAuto() {
+    if (bannerTotal > 1) bannerAutoTimer = setInterval(() => goToBanner(bannerCurrent + 1), 4000);
+  }
+
+  function restartBannerAuto() {
+    clearInterval(bannerAutoTimer);
+    startBannerAuto();
+  }
+
+  if (bannerTotal > 1) {
+    prev.style.display = 'flex';
+    next.style.display = 'flex';
+    prev.addEventListener('click', () => { goToBanner(bannerCurrent - 1); restartBannerAuto(); });
+    next.addEventListener('click', () => { goToBanner(bannerCurrent + 1); restartBannerAuto(); });
+    dots.forEach(dot => dot.addEventListener('click', () => {
+      goToBanner(Number(dot.dataset.index));
+      restartBannerAuto();
+    }));
+    startBannerAuto();
+  }
+}
+
+async function loadZineBanners() {
+  const track = document.getElementById('swiperTrack');
+  const dots = document.getElementById('swiperDots');
+
+  try {
+    const response = await fetch(`${API_BASE}/madang-banners?per_page=10&_embed&orderby=menu_order&order=asc`);
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const posts = await response.json();
+    if (!Array.isArray(posts) || posts.length === 0) throw new Error('no banners');
+    track.innerHTML = posts.map(buildBannerSlide).join('');
+    bannerTotal = posts.length;
+  } catch (error) {
+    console.error('Failed to load banners:', error);
+    track.innerHTML = '<div class="swiper-slide"><img class="slide-bg" src="https://sangsang153.com/wp-content/uploads/2026/05/banner1-img.png" alt="상상동행마당 홍보 배너 (예시 1)" /></div>';
+    bannerTotal = 1;
+  }
+
+  if (bannerTotal > 1) {
+    dots.style.display = 'flex';
+    dots.innerHTML = Array.from({ length: bannerTotal }, (_, index) =>
+      `<button class="swiper-dot ${index === 0 ? 'active' : ''}" data-index="${index}" aria-label="슬라이드 ${index + 1}"></button>`
+    ).join('');
+  }
+  setupBannerControls();
+}
 
 let allPosts = [];
 let dynamicAuthors = [];
@@ -494,6 +598,7 @@ function hideAll() {
 }
 
 buildSidebar();
+loadZineBanners();
 loadPosts();
 </script>
 
