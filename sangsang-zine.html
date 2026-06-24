@@ -62,9 +62,16 @@
 
     /* ── Hero Section ── */
     .hero { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--color-border); margin-top: 40px; }
-    .hero-item { padding: 2rem 2rem; cursor: pointer; border-right: 1px solid var(--color-border); transition: background 0.15s; text-decoration: none; color: inherit; display: flex; flex-direction: column; gap: 12px; background: none; border: none; font-family: var(--font-main); text-align: left; }
+    .hero-item { padding: 0; cursor: pointer; border: none; border-right: 1px solid var(--color-border); transition: background 0.15s; text-decoration: none; color: inherit; display: flex; flex-direction: column; background: none; font-family: var(--font-main); text-align: left; overflow: hidden; }
     .hero-item:last-child { border-right: none; }
     .hero-item:hover { background: #f8fdf0; }
+    .hero-thumb { width: 100%; aspect-ratio: 16 / 9; overflow: hidden; background: #edf3e4; }
+    .hero-thumb img { width: 100%; height: 100%; display: block; object-fit: cover; transition: transform 0.3s ease; }
+    .hero-item:hover .hero-thumb img { transform: scale(1.02); }
+    .hero-thumb-placeholder { width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; color: #769348; background: radial-gradient(circle at 20% 20%, rgba(255,255,255,0.9), transparent 32%), linear-gradient(135deg, #f4f8ed 0%, #dfeacb 100%); }
+    .hero-thumb-placeholder span { font-size: 11px; font-weight: 700; letter-spacing: 0.16em; }
+    .hero-thumb-placeholder strong { font-family: var(--font-display); font-size: clamp(20px, 3vw, 34px); letter-spacing: 0.04em; }
+    .hero-content { display: flex; flex: 1; flex-direction: column; gap: 12px; padding: 2rem; }
     .hero-tag { font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--color-text-ter); font-weight: 600; }
     .hero-title { font-size: 20px; font-weight: 600; line-height: 1.35; color: var(--color-dark); font-family: var(--font-display); }
     .hero-sub { font-size: 14px; color: var(--color-text-sec); line-height: 1.6; }
@@ -145,6 +152,9 @@
       .swiper-btn--prev { left: 14px; }
       .swiper-btn--next { right: 14px; }
       .swiper-dots { bottom: 12px; }
+      .hero { grid-template-columns: 1fr; }
+      .hero-item { border-right: none; border-bottom: 1px solid var(--color-border); }
+      .hero-item:last-child { border-bottom: none; }
       .main-wrap { grid-template-columns: 1fr; }
       .sidebar { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--color-border); }
       .sidebar-list { display: flex; flex-wrap: wrap; gap: 4px; padding: 0 1.25rem 1rem; }
@@ -399,6 +409,17 @@ function getAuthorColor(authorName) {
   return colorMap[authorName] || { color: '#95B658', bg: '#f0f0f0', num: '00' };
 }
 
+function buildHeroThumb(post, label) {
+  const media = post?._embedded?.['wp:featuredmedia']?.[0];
+  const image = media?.media_details?.sizes?.large?.source_url || media?.media_details?.sizes?.medium_large?.source_url || media?.source_url || '';
+  const title = stripBannerHtml(post?.title?.rendered || label);
+
+  if (image) {
+    return `<div class="hero-thumb"><img src="${escapeBannerHtml(image)}" alt="${escapeBannerHtml(title)}" /></div>`;
+  }
+  return `<div class="hero-thumb"><div class="hero-thumb-placeholder"><span>${label}</span><strong>SANGSANG ZINE</strong></div></div>`;
+}
+
 async function loadHeroSection() {
   try {
     // 시론, 포커스 카테고리 ID 확인 및 글 로드
@@ -414,16 +435,22 @@ async function loadHeroSection() {
         const p = posts[0];
         const excerpt = p.excerpt.rendered.replace(/<[^>]+>/g, '').slice(0, 80);
         heroHTML += `<button class="hero-item" onclick="goToPost(${p.id})">
-          <div class="hero-tag">시론</div>
-          <div class="hero-title">${p.title.rendered}</div>
-          <div class="hero-sub">${excerpt}</div>
-          <div class="hero-link">읽으러 가기 →</div>
+          ${buildHeroThumb(p, '시론')}
+          <div class="hero-content">
+            <div class="hero-tag">시론</div>
+            <div class="hero-title">${p.title.rendered}</div>
+            <div class="hero-sub">${excerpt}</div>
+            <div class="hero-link">읽으러 가기 →</div>
+          </div>
         </button>`;
       } else {
         heroHTML += `<div class="hero-item" style="opacity:0.5;pointer-events:none;">
-          <div class="hero-tag">시론</div>
-          <div class="hero-title">아직 글이 없습니다</div>
-          <div class="hero-sub">곧 새로운 시론을 올려드리겠습니다.</div>
+          ${buildHeroThumb(null, '시론')}
+          <div class="hero-content">
+            <div class="hero-tag">시론</div>
+            <div class="hero-title">아직 글이 없습니다</div>
+            <div class="hero-sub">곧 새로운 시론을 올려드리겠습니다.</div>
+          </div>
         </div>`;
       }
     }
@@ -436,16 +463,22 @@ async function loadHeroSection() {
         const p = posts[0];
         const excerpt = p.excerpt.rendered.replace(/<[^>]+>/g, '').slice(0, 80);
         heroHTML += `<button class="hero-item" onclick="goToPost(${p.id})">
-          <div class="hero-tag">포커스</div>
-          <div class="hero-title">${p.title.rendered}</div>
-          <div class="hero-sub">${excerpt}</div>
-          <div class="hero-link">읽으러 가기 →</div>
+          ${buildHeroThumb(p, '포커스')}
+          <div class="hero-content">
+            <div class="hero-tag">포커스</div>
+            <div class="hero-title">${p.title.rendered}</div>
+            <div class="hero-sub">${excerpt}</div>
+            <div class="hero-link">읽으러 가기 →</div>
+          </div>
         </button>`;
       } else {
         heroHTML += `<div class="hero-item" style="opacity:0.5;pointer-events:none;">
-          <div class="hero-tag">포커스</div>
-          <div class="hero-title">아직 글이 없습니다</div>
-          <div class="hero-sub">곧 새로운 포커스를 올려드리겠습니다.</div>
+          ${buildHeroThumb(null, '포커스')}
+          <div class="hero-content">
+            <div class="hero-tag">포커스</div>
+            <div class="hero-title">아직 글이 없습니다</div>
+            <div class="hero-sub">곧 새로운 포커스를 올려드리겠습니다.</div>
+          </div>
         </div>`;
       }
     }
