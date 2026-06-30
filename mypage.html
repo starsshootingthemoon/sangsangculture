@@ -665,7 +665,7 @@
       const img = c.poster
         ? `<img style="width:110px;height:155px;object-fit:cover;border-radius:8px;display:block;" src="${c.poster}" alt="${c.title}" />`
         : `<div style="width:110px;height:155px;border-radius:8px;background:#e8e8e8;display:flex;align-items:center;justify-content:center;font-size:28px;">🎭</div>`;
-      return `<a class="poster-item" href="concert.html?id=${c.id}&type=${c.type || 'upcoming'}">${img}<span class="poster-item__title">${c.title}</span></a>`;
+      return `<a class="poster-item" href="concert.php?id=${c.id}&type=${c.type || 'upcoming'}">${img}<span class="poster-item__title">${c.title}</span></a>`;
     }
     function zineItemHTML(z) {
       const img = z.thumbnail
@@ -679,7 +679,7 @@
       const img = c.poster
         ? `<img style="width:100%;height:180px;object-fit:cover;border-radius:8px;display:block;flex-shrink:0;" src="${c.poster}" alt="${c.title}" />`
         : `<div style="width:100%;height:180px;border-radius:8px;background:#e8e8e8;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;">🎭</div>`;
-      return `<a class="modal-poster-item" style="display:flex;flex-direction:column;gap:6px;text-decoration:none;" href="concert.html?id=${c.id}&type=${c.type || 'upcoming'}">${img}<span style="font-size:11px;font-weight:600;color:#30312B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.title}</span></a>`;
+      return `<a class="modal-poster-item" style="display:flex;flex-direction:column;gap:6px;text-decoration:none;" href="concert.php?id=${c.id}&type=${c.type || 'upcoming'}">${img}<span style="font-size:11px;font-weight:600;color:#30312B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${c.title}</span></a>`;
     }
     function zineModalHTML(z) {
       const img = z.thumbnail
@@ -807,7 +807,7 @@
         el.innerHTML = `<div class="comment-list">${comments.map(c => {
           const date = new Date(c.date).toLocaleDateString('ko-KR');
           const body = c.content.slice(0, 80);
-          return `<a class="comment-item" href="zine-magazine.html?id=${c.post_id}">
+          return `<a class="comment-item" href="zine-magazine.php?id=${c.post_id}">
             <span class="comment-item__post">📄 ${c.post_title}</span>
             <div class="comment-item__body">${body}</div>
             <span class="comment-item__meta">${date}</span>

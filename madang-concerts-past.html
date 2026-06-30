@@ -227,7 +227,7 @@
             name: p.title?.rendered || '',
             date: dateStr || p.date.slice(0, 10).replace(/-/g, '.'),
             img,
-            link: `concert.html?id=${p.id}&type=past`,
+            link: `concert.php?id=${p.id}&type=past`,
           };
         });
         render();

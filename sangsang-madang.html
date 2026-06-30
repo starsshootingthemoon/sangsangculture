@@ -819,7 +819,7 @@
       const thumb = getThumbUrl(post);
       const excerpt = stripHtml2(post.excerpt?.rendered || '');
       const [venue = '', dateStr = ''] = excerpt.split('|').map(s => s.trim());
-      const link = `concert.html?id=${post.id}&type=${type}`;
+      const link = `concert.php?id=${post.id}&type=${type}`;
       return `
         <a class="poster-card" href="${link}" style="text-decoration:none;color:inherit;display:block;">
           <img class="poster-card__img" src="${thumb}" alt="${title}" loading="lazy" />

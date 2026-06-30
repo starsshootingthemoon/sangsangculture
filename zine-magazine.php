@@ -1,9 +1,53 @@
+<?php
+$ss_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+$ss_og_title = '매거진 — SangSang ZINE';
+$ss_og_desc  = '상상문화의 다양한 이야기를 상상ZINE에서 만나보세요.';
+$ss_og_image = 'https://sangsang153.com/assets/logo.svg';
+$ss_og_url   = 'https://sangsang153.com/zine-magazine.php?id=' . $ss_id;
+
+if ($ss_id) {
+  $ss_api_url = 'https://sangsang153.com/wp-json/wp/v2/posts/' . $ss_id . '?_embed';
+  $ss_ctx = stream_context_create(array('http' => array('timeout' => 3)));
+  $ss_response = @file_get_contents($ss_api_url, false, $ss_ctx);
+  if ($ss_response) {
+    $ss_post = json_decode($ss_response, true);
+    if (is_array($ss_post) && !isset($ss_post['code'])) {
+      if (!empty($ss_post['title']['rendered'])) {
+        $ss_og_title = trim(strip_tags($ss_post['title']['rendered'])) . ' — 상상ZINE';
+      }
+      if (!empty($ss_post['excerpt']['rendered'])) {
+        $ss_og_desc = trim(strip_tags($ss_post['excerpt']['rendered']));
+      } elseif (!empty($ss_post['content']['rendered'])) {
+        $ss_og_desc = trim(mb_substr(trim(strip_tags($ss_post['content']['rendered'])), 0, 100, 'UTF-8'));
+      }
+      $ss_featured = isset($ss_post['_embedded']['wp:featuredmedia'][0]['source_url'])
+        ? $ss_post['_embedded']['wp:featuredmedia'][0]['source_url']
+        : '';
+      if ($ss_featured) {
+        $ss_og_image = $ss_featured;
+      }
+    }
+  }
+}
+?>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>매거진 — SangSang ZINE</title>
+  <title><?php echo htmlspecialchars($ss_og_title, ENT_QUOTES, 'UTF-8'); ?></title>
+
+  <meta property="og:type" content="article" />
+  <meta property="og:title" content="<?php echo htmlspecialchars($ss_og_title, ENT_QUOTES, 'UTF-8'); ?>" />
+  <meta property="og:description" content="<?php echo htmlspecialchars($ss_og_desc, ENT_QUOTES, 'UTF-8'); ?>" />
+  <meta property="og:image" content="<?php echo htmlspecialchars($ss_og_image, ENT_QUOTES, 'UTF-8'); ?>" />
+  <meta property="og:url" content="<?php echo htmlspecialchars($ss_og_url, ENT_QUOTES, 'UTF-8'); ?>" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="<?php echo htmlspecialchars($ss_og_title, ENT_QUOTES, 'UTF-8'); ?>" />
+  <meta name="twitter:description" content="<?php echo htmlspecialchars($ss_og_desc, ENT_QUOTES, 'UTF-8'); ?>" />
+  <meta name="twitter:image" content="<?php echo htmlspecialchars($ss_og_image, ENT_QUOTES, 'UTF-8'); ?>" />
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <link rel="stylesheet" href="assets/mobile.css" />
   <style>
@@ -361,7 +405,7 @@
 
   <script>
     // ── WordPress 글 상세 로딩 ─────────────────────────────────
-    // URL 형식: zine-magazine.html?id=POST_ID
+    // URL 형식: zine-magazine.php?id=POST_ID
     const WP_API_BASE = window.location.origin + '/wp-json/wp/v2';
 
     function getQueryParam(name) {
@@ -489,7 +533,7 @@
           title: (post.title?.rendered || '').replace(/<[^>]+>/g, ''),
           thumbnail: post._embedded?.['wp:featuredmedia']?.[0]?.source_url || '',
           date: new Date().toISOString(),
-          url: `zine-magazine.html?id=${id}`,
+          url: `zine-magazine.php?id=${id}`,
         };
         try {
           let list = JSON.parse(localStorage.getItem('ss_recent_zines') || '[]');

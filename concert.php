@@ -1,9 +1,58 @@
+<?php
+$ss_id   = isset($_GET['id']) ? intval($_GET['id']) : 0;
+$ss_type = (isset($_GET['type']) && $_GET['type'] === 'past') ? 'past' : 'upcoming';
+$ss_rest_base = $ss_type === 'past' ? 'past-concerts' : 'upcoming-concerts';
+
+$ss_og_title = '공연 상세 — SangSang Culture';
+$ss_og_desc  = '상상문화와 함께하는 공연 정보를 확인해보세요.';
+$ss_og_image = 'https://sangsang153.com/assets/logo.svg';
+$ss_og_url   = 'https://sangsang153.com/concert.php?id=' . $ss_id . '&type=' . $ss_type;
+
+if ($ss_id) {
+  $ss_api_url = 'https://sangsang153.com/wp-json/wp/v2/' . $ss_rest_base . '/' . $ss_id;
+  $ss_ctx = stream_context_create(array('http' => array('timeout' => 3)));
+  $ss_response = @file_get_contents($ss_api_url, false, $ss_ctx);
+  if ($ss_response) {
+    $ss_post = json_decode($ss_response, true);
+    if (is_array($ss_post) && !isset($ss_post['code'])) {
+      if (!empty($ss_post['title']['rendered'])) {
+        $ss_og_title = trim(strip_tags($ss_post['title']['rendered'])) . ' — SangSang Culture';
+      }
+      if (!empty($ss_post['excerpt']['rendered'])) {
+        $ss_excerpt_text = trim(strip_tags($ss_post['excerpt']['rendered']));
+        $ss_parts = array_map('trim', explode('|', $ss_excerpt_text));
+        $ss_desc_parts = array_filter(array(
+          isset($ss_parts[0]) ? $ss_parts[0] : '',
+          isset($ss_parts[1]) ? $ss_parts[1] : '',
+        ));
+        if (!empty($ss_desc_parts)) {
+          $ss_og_desc = implode(' · ', $ss_desc_parts);
+        }
+      }
+      if (!empty($ss_post['featured_image_url'])) {
+        $ss_og_image = $ss_post['featured_image_url'];
+      }
+    }
+  }
+}
+?>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>공연 상세 — SangSang Culture</title>
+  <title><?php echo htmlspecialchars($ss_og_title, ENT_QUOTES, 'UTF-8'); ?></title>
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="<?php echo htmlspecialchars($ss_og_title, ENT_QUOTES, 'UTF-8'); ?>" />
+  <meta property="og:description" content="<?php echo htmlspecialchars($ss_og_desc, ENT_QUOTES, 'UTF-8'); ?>" />
+  <meta property="og:image" content="<?php echo htmlspecialchars($ss_og_image, ENT_QUOTES, 'UTF-8'); ?>" />
+  <meta property="og:url" content="<?php echo htmlspecialchars($ss_og_url, ENT_QUOTES, 'UTF-8'); ?>" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="<?php echo htmlspecialchars($ss_og_title, ENT_QUOTES, 'UTF-8'); ?>" />
+  <meta name="twitter:description" content="<?php echo htmlspecialchars($ss_og_desc, ENT_QUOTES, 'UTF-8'); ?>" />
+  <meta name="twitter:image" content="<?php echo htmlspecialchars($ss_og_image, ENT_QUOTES, 'UTF-8'); ?>" />
+
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css" />
   <link rel="stylesheet" href="assets/mobile.css" />
   <style>
