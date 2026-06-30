@@ -1,37 +1,35 @@
 <?php
 $ss_id   = isset($_GET['id']) ? intval($_GET['id']) : 0;
 $ss_type = (isset($_GET['type']) && $_GET['type'] === 'past') ? 'past' : 'upcoming';
-$ss_rest_base = $ss_type === 'past' ? 'past-concerts' : 'upcoming-concerts';
+$ss_post_type = $ss_type === 'past' ? 'past_concert' : 'upcoming_concert';
 
 $ss_og_title = '공연 상세 — SangSang Culture';
 $ss_og_desc  = '상상문화와 함께하는 공연 정보를 확인해보세요.';
 $ss_og_image = 'https://sangsang153.com/assets/logo.svg';
 $ss_og_url   = 'https://sangsang153.com/concert.php?id=' . $ss_id . '&type=' . $ss_type;
 
-if ($ss_id) {
-  $ss_api_url = 'https://sangsang153.com/wp-json/wp/v2/' . $ss_rest_base . '/' . $ss_id;
-  $ss_ctx = stream_context_create(array('http' => array('timeout' => 3)));
-  $ss_response = @file_get_contents($ss_api_url, false, $ss_ctx);
-  if ($ss_response) {
-    $ss_post = json_decode($ss_response, true);
-    if (is_array($ss_post) && !isset($ss_post['code'])) {
-      if (!empty($ss_post['title']['rendered'])) {
-        $ss_og_title = trim(strip_tags($ss_post['title']['rendered'])) . ' — SangSang Culture';
+if ($ss_id && file_exists(__DIR__ . '/wp-load.php')) {
+  require_once __DIR__ . '/wp-load.php';
+  $ss_post = get_post($ss_id);
+  if ($ss_post && $ss_post->post_type === $ss_post_type && $ss_post->post_status === 'publish') {
+    $ss_title = get_the_title($ss_post);
+    if ($ss_title) {
+      $ss_og_title = trim(strip_tags($ss_title)) . ' — SangSang Culture';
+    }
+    $ss_excerpt_text = trim(strip_tags($ss_post->post_excerpt));
+    if ($ss_excerpt_text) {
+      $ss_parts = array_map('trim', explode('|', $ss_excerpt_text));
+      $ss_desc_parts = array_filter(array(
+        isset($ss_parts[0]) ? $ss_parts[0] : '',
+        isset($ss_parts[1]) ? $ss_parts[1] : '',
+      ));
+      if (!empty($ss_desc_parts)) {
+        $ss_og_desc = implode(' · ', $ss_desc_parts);
       }
-      if (!empty($ss_post['excerpt']['rendered'])) {
-        $ss_excerpt_text = trim(strip_tags($ss_post['excerpt']['rendered']));
-        $ss_parts = array_map('trim', explode('|', $ss_excerpt_text));
-        $ss_desc_parts = array_filter(array(
-          isset($ss_parts[0]) ? $ss_parts[0] : '',
-          isset($ss_parts[1]) ? $ss_parts[1] : '',
-        ));
-        if (!empty($ss_desc_parts)) {
-          $ss_og_desc = implode(' · ', $ss_desc_parts);
-        }
-      }
-      if (!empty($ss_post['featured_image_url'])) {
-        $ss_og_image = $ss_post['featured_image_url'];
-      }
+    }
+    $ss_thumb = get_the_post_thumbnail_url($ss_post, 'large');
+    if ($ss_thumb) {
+      $ss_og_image = $ss_thumb;
     }
   }
 }
