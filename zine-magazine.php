@@ -148,7 +148,7 @@ if ($ss_id && file_exists(__DIR__ . '/wp-load.php')) {
     .article__content .wp-block-gallery img { margin: 0; aspect-ratio: 1; object-fit: cover; }
 
     /* ── Reactions (좋아요/싫어요) ── */
-    .reactions { max-width: 955px; margin: 0 auto; padding: 24px 40px 0; display: flex; gap: 14px; justify-content: center; }
+    .reactions { max-width: 955px; margin: 0 auto; padding: 24px 40px 0; display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; }
     .reaction-btn {
       display: inline-flex; align-items: center; gap: 10px;
       padding: 14px 32px; background: #fff;
@@ -165,6 +165,29 @@ if ($ss_id && file_exists(__DIR__ . '/wp-load.php')) {
     .reaction-btn--dislike.active { background: #fdecec; border-color: #d33; color: #d33; }
 
     .reaction-btn:disabled { opacity: 0.6; cursor: default; }
+
+    .share-wrap { position: relative; }
+    .share-popup {
+      position: absolute; left: 50%; bottom: calc(100% + 12px); z-index: 120;
+      width: 230px; padding: 10px; background: #fff; border: 1px solid #e5e5e5;
+      border-radius: 14px; box-shadow: 0 12px 36px rgba(0,0,0,0.16);
+      transform: translateX(-50%); display: none;
+    }
+    .share-popup.open { display: block; }
+    .share-popup::after {
+      content: ''; position: absolute; left: 50%; bottom: -7px; width: 12px; height: 12px;
+      background: #fff; border-right: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5;
+      transform: translateX(-50%) rotate(45deg);
+    }
+    .share-popup__title { padding: 5px 8px 9px; font-size: 13px; font-weight: 700; color: #333; }
+    .share-option {
+      width: 100%; display: flex; align-items: center; gap: 10px; padding: 11px 10px;
+      border: 0; border-radius: 9px; background: #fff; color: #444; cursor: pointer;
+      font-family: var(--font-main); font-size: 14px; font-weight: 600; text-align: left;
+    }
+    .share-option:hover { background: #f4f7ef; }
+    .share-option__icon { width: 26px; height: 26px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: #eef4e4; font-size: 14px; flex-shrink: 0; }
+    .share-copy-status { min-height: 18px; padding: 7px 8px 2px; font-size: 11px; color: var(--color-green); text-align: center; }
 
     @media (max-width: 640px) {
       .reactions { padding: 16px 20px 0; }
@@ -349,6 +372,24 @@ if ($ss_id && file_exists(__DIR__ . '/wp-load.php')) {
       <span>싫어요</span>
       <span class="reaction-btn__count" id="dislikeCount">0</span>
     </button>
+    <div class="share-wrap">
+      <button type="button" class="reaction-btn" id="shareBtn" onclick="toggleSharePopup()" aria-haspopup="true" aria-expanded="false">
+        <span class="reaction-btn__icon">↗</span>
+        <span>공유</span>
+      </button>
+      <div class="share-popup" id="sharePopup" role="dialog" aria-label="공유 옵션">
+        <div class="share-popup__title">이 글 공유하기</div>
+        <button type="button" class="share-option" onclick="copyArticleLink()">
+          <span class="share-option__icon">🔗</span>
+          <span>링크 복사</span>
+        </button>
+        <button type="button" class="share-option" onclick="shareArticleToSns()">
+          <span class="share-option__icon">💬</span>
+          <span>SNS로 공유</span>
+        </button>
+        <div class="share-copy-status" id="shareCopyStatus" aria-live="polite"></div>
+      </div>
+    </div>
   </div>
 
   <!-- ══ Comments ══ -->
@@ -620,6 +661,71 @@ if ($ss_id && file_exists(__DIR__ . '/wp-load.php')) {
         likeBtn.disabled = false; dislikeBtn.disabled = false;
       }
     }
+
+    // ── 글 공유 ───────────────────────────────────────────────
+    const SHARE_MESSAGE = '상상 홈페이지에서 당신의 상상을 만나 보세요.';
+
+    function getArticleShareData() {
+      const url = new URL(window.location.href);
+      url.hash = '';
+      const title = document.getElementById('articleTitle').textContent.trim() || '상상ZINE';
+      return { title, text: `${title}\n${SHARE_MESSAGE}`, url: url.toString() };
+    }
+
+    function toggleSharePopup(forceOpen) {
+      const popup = document.getElementById('sharePopup');
+      const button = document.getElementById('shareBtn');
+      const shouldOpen = typeof forceOpen === 'boolean' ? forceOpen : !popup.classList.contains('open');
+      popup.classList.toggle('open', shouldOpen);
+      button.setAttribute('aria-expanded', String(shouldOpen));
+      if (!shouldOpen) document.getElementById('shareCopyStatus').textContent = '';
+    }
+
+    async function copyArticleLink() {
+      const { url } = getArticleShareData();
+      const copyText = `${SHARE_MESSAGE}\n${url}`;
+      const status = document.getElementById('shareCopyStatus');
+      try {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(copyText);
+        } else {
+          const textarea = document.createElement('textarea');
+          textarea.value = copyText;
+          textarea.style.position = 'fixed';
+          textarea.style.opacity = '0';
+          document.body.appendChild(textarea);
+          textarea.select();
+          if (!document.execCommand('copy')) throw new Error('copy failed');
+          textarea.remove();
+        }
+        status.textContent = '문구와 링크를 복사했습니다.';
+      } catch (e) {
+        status.textContent = '복사하지 못했습니다. 다시 시도해 주세요.';
+      }
+    }
+
+    async function shareArticleToSns() {
+      const shareData = getArticleShareData();
+      if (navigator.share) {
+        try {
+          await navigator.share(shareData);
+          toggleSharePopup(false);
+        } catch (e) {
+          if (e.name !== 'AbortError') document.getElementById('shareCopyStatus').textContent = '공유창을 열지 못했습니다.';
+        }
+        return;
+      }
+      await copyArticleLink();
+      document.getElementById('shareCopyStatus').textContent = '이 브라우저에서는 SNS 공유 대신 문구와 링크를 복사했습니다.';
+    }
+
+    document.addEventListener('click', (event) => {
+      const wrap = document.querySelector('.share-wrap');
+      if (wrap && !wrap.contains(event.target)) toggleSharePopup(false);
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape') toggleSharePopup(false);
+    });
 
     // article 로드 시 reactions도 같이
     const _pidR = getQueryParam('id');
